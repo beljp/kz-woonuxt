@@ -20,7 +20,7 @@ export default defineNuxtConfig({
       routes: [],
     },
     minify: true,
-    preset: 'netlify', // ⬅️ belangrijk voor Netlify
+    preset: 'netlify', // ✅ belangrijk voor Netlify
   },
 
   vite: {
@@ -28,10 +28,11 @@ export default defineNuxtConfig({
   },
 
   generate: {
-    fallback: true, // ⬅️ zorgt dat client routes zoals /broeken werken
+    fallback: true, // ✅ zorgt dat client routes zoals /broeken werken
   },
 
   hooks: {
+    // ✅ Dynamische categorieën prerenderen
     async 'nitro:config'(nitroConfig) {
       try {
         const res = await fetch('https://wp.kledingzoeken.nl/graphql', {
@@ -59,5 +60,21 @@ export default defineNuxtConfig({
       }
     },
   },
-})
 
+  // ✅ i18n-config — laadt vertalingen direct uit lokale bestanden (geen 404 meer)
+  i18n: {
+    lazy: false, // alles direct gebundeld, geen runtime fetch
+    langDir: 'woonuxt_base/i18n/locales',
+    defaultLocale: 'nl_NL',
+    strategy: 'no_prefix',
+    locales: [
+      { code: 'nl_NL', file: 'nl-NL.json', name: 'Nederlands 🇳🇱' },
+      { code: 'en_US', file: 'en-US.json', name: 'English 🇺🇸' },
+      { code: 'de_DE', file: 'de-DE.json', name: 'Deutsch 🇩🇪' },
+      { code: 'es_ES', file: 'es-ES.json', name: 'Español 🇪🇸' },
+      { code: 'fr_FR', file: 'fr-FR.json', name: 'Français 🇫🇷' },
+      { code: 'it_IT', file: 'it-IT.json', name: 'Italiano 🇮🇹' },
+      { code: 'pt_BR', file: 'pt-BR.json', name: 'Português 🇧🇷' },
+    ],
+  },
+})
