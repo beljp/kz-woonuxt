@@ -1,4 +1,5 @@
-import { defineNuxtConfig, createResolver } from 'nuxt/config'
+import { defineNuxtConfig } from 'nuxt/config'
+import { createResolver } from '@nuxt/kit' // ✅ juiste import voor Nuxt 4.1.3
 
 const { resolve } = createResolver(import.meta.url)
 
@@ -65,8 +66,8 @@ export default defineNuxtConfig({
 
   // ✅ i18n-config — correct pad via resolver
   i18n: {
-    lazy: false, // laadt alles direct, geen fetch calls
-    langDir: resolve('./woonuxt_base/i18n/locales'), // ✅ absoluut pad voorkomt build error
+    lazy: false,
+    langDir: resolve('./woonuxt_base/i18n/locales'),
     defaultLocale: 'nl_NL',
     strategy: 'no_prefix',
     locales: [
