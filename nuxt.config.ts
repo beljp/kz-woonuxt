@@ -1,5 +1,4 @@
 import { defineNuxtConfig } from 'nuxt/config'
-import { resolve } from 'path'
 
 export default defineNuxtConfig({
   extends: ['./woonuxt_base'],
@@ -21,7 +20,7 @@ export default defineNuxtConfig({
       routes: [],
     },
     minify: true,
-    preset: 'netlify',
+    preset: 'netlify', // ⬅️ belangrijk voor Netlify
   },
 
   vite: {
@@ -29,22 +28,7 @@ export default defineNuxtConfig({
   },
 
   generate: {
-    fallback: true, // ⬅️ client routes zoals /broeken werken
-  },
-
-  modules: [
-    '@nuxtjs/i18n', // ✅ zorg dat i18n altijd geladen is
-  ],
-
-  // ✅ i18n instellingen
-  i18n: {
-    lazy: false,
-    langDir: resolve('./woonuxt_base/i18n/locales'), // ✅ absoluut pad
-    defaultLocale: 'nl_NL',
-    strategy: 'no_prefix',
-    locales: [
-      { code: 'nl_NL', file: 'nl-NL.json', name: 'Nederlands' },
-    ],
+    fallback: true, // ⬅️ zorgt dat client routes zoals /broeken werken
   },
 
   hooks: {
