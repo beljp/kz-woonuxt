@@ -10,19 +10,17 @@ export default defineNuxtConfig({
     },
   },
 
-  components: [
-    { path: './components', pathPrefix: false },
-  ],
+  components: [{ path: './components', pathPrefix: false }],
 
   nitro: {
     prerender: {
       concurrency: 10,
       interval: 1000,
       failOnError: false,
-      routes: [], // <-- leeg als startwaarde
+      routes: [],
     },
     minify: true,
-    preset: 'netlify', // ✅ voor Netlify build
+    preset: 'netlify', // ⬅️ belangrijk voor Netlify
   },
 
   vite: {
@@ -30,10 +28,9 @@ export default defineNuxtConfig({
   },
 
   generate: {
-    fallback: true, // ✅ zorgt dat client-routes zoals /broeken werken
+    fallback: true, // ⬅️ zorgt dat client routes zoals /broeken werken
   },
 
-  // ✅ Dynamische categorie-routes ophalen via GraphQL
   hooks: {
     async 'nitro:config'(nitroConfig) {
       try {
@@ -52,7 +49,6 @@ export default defineNuxtConfig({
             `,
           }),
         })
-
         const json = await res.json()
         const slugs = json?.data?.productCategories?.nodes?.map((n: any) => n.slug) || []
 
