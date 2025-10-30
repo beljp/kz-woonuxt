@@ -22,7 +22,18 @@ export default defineNuxtConfig({
     minify: true,
     preset: 'netlify', // ⬅️ belangrijk voor Netlify
   },
-
+  
+  // ✅ i18n instellingen
+  i18n: {
+    lazy: false,
+    langDir: './woonuxt_base/i18n/locales', // correcte map
+    defaultLocale: 'nl_NL',
+    strategy: 'no_prefix',
+    locales: [
+      { code: 'nl_NL', file: 'nl-NL.json', name: 'Nederlands' },
+    ],
+  },
+  
   vite: {
     plugins: [require('@rollup/plugin-graphql')()],
   },
