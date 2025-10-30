@@ -1,4 +1,6 @@
-import { defineNuxtConfig } from 'nuxt/config'
+import { defineNuxtConfig, createResolver } from 'nuxt/config'
+
+const { resolve } = createResolver(import.meta.url)
 
 export default defineNuxtConfig({
   extends: ['./woonuxt_base'],
@@ -61,10 +63,10 @@ export default defineNuxtConfig({
     },
   },
 
-  // ✅ i18n-config — laadt vertalingen direct uit lokale bestanden (geen 404 meer)
+  // ✅ i18n-config — correct pad via resolver
   i18n: {
-    lazy: false, // alles direct gebundeld, geen runtime fetch
-    langDir: 'woonuxt_base/i18n/locales',
+    lazy: false, // laadt alles direct, geen fetch calls
+    langDir: resolve('./woonuxt_base/i18n/locales'), // ✅ absoluut pad voorkomt build error
     defaultLocale: 'nl_NL',
     strategy: 'no_prefix',
     locales: [
