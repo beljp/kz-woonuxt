@@ -35,6 +35,22 @@ export default defineNuxtConfig({
 
   generate: {
     fallback: true, // ⬅️ zorgt dat client routes zoals /broeken werken
+    i18n: {
+  lazy: true,
+  langDir: 'locales',
+  strategy: 'no_prefix',
+  defaultLocale: 'nl_NL',
+  detectBrowserLanguage: {
+    useCookie: true,
+    cookieKey: 'i18n_redirected',
+    redirectOn: 'root',
+  },
+  vueI18n: {
+    legacy: false,
+    locale: 'nl_NL',
+    fallbackLocale: 'nl_NL',
+  },
+},
   },
 
   hooks: {
