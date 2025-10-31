@@ -41,15 +41,15 @@ const textToDisplay = computed(() => {
 })
 
 // 🧠 Debug: zie of de prijzen doorkomen
-onMounted(() => {
-  console.log('🧩 SaleBadge Debug:', {
-    name: node?.name,
-    type: node?.__typename,
-    regular: node?.regularPrice,
-    sale: node?.salePrice,
-    visible: showSaleBadge.value,
-  })
-})
+// onMounted(() => {
+//   console.log('🧩 SaleBadge Debug:', {
+//     name: node?.name,
+//     type: node?.__typename,
+//     regular: node?.regularPrice,
+//     sale: node?.salePrice,
+//     visible: showSaleBadge.value,
+//   })
+// })
 </script>
 
 <template>
