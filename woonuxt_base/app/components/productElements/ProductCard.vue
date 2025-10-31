@@ -67,7 +67,6 @@ const imagetoDisplay = computed<string>(() => {
   return mainImage.value
 })
 
-// 🧠 Debug (optioneel)
 // onMounted(() => {
 //   if (props.node?.__typename === 'ExternalProduct') {
 //     console.log('External product:', props.node)
