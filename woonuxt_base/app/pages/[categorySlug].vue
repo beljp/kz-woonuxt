@@ -11,11 +11,18 @@ const slug = route.params.categorySlug as string
 //   slug,
 //   first: 1,
 // })
-  const { data: categoryData, pending, error } = await useAsyncData(
-  `category-${slug}`,
-  () => useGql('GetProductsByCategory', { slug, first: 1 })
-)
+//   const { data: categoryData, pending, error } = await useAsyncData(
+//   `category-${slug}`,
+//   () => useGql('GetProductsByCategory', { slug, first: 1 })
+// )
+const { data: categoryData, pending, error } = await useAsyncGql('GetProductsByCategory', {
+  slug,
+  first: 1,
+})
 
+
+
+  
 const category = computed(() => categoryData.value?.productCategory ?? null)
 
 // Ancestors in juiste volgorde: root → … → parent
