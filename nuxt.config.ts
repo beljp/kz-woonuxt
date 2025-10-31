@@ -14,8 +14,8 @@ export default defineNuxtConfig({
 
   nitro: {
     prerender: {
-      concurrency: 10,
-      interval: 1000,
+      concurrency: 2,
+      interval: 2000,
       failOnError: false,
       routes: [],
     },
