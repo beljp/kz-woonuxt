@@ -11,10 +11,10 @@ const slug = route.params.categorySlug as string
 //   slug,
 //   first: 1,
 // })
-  const { data: categoryData, pending, error } = await useAsyncData(
-  `category-${slug}`,
-  () => useGql('GetProductsByCategory', { slug, first: 1 })
-)
+// ✅ Fix – 31-10-2025
+const { data: gqlData, error } = await useGql('GetProductsByCategory', { slug, first: 1 })
+const categoryData = computed(() => gqlData)
+const pending = computed(() => !gqlData && !error)
 
 const category = computed(() => categoryData.value?.productCategory ?? null)
 
