@@ -50,4 +50,13 @@ export default defineNuxtConfig({
           }),
         })
         const json = await res.json()
-        const slugs = json?.data?.prod
+        const slugs = json?.data?.productCategories?.nodes?.map((n: any) => n.slug) || []
+
+        console.log('✅ [Prerender Hook] Categorieën gevonden:', slugs.length)
+        nitroConfig.prerender.routes.push(...slugs.map((slug: string) => `/${slug}`))
+      } catch (err) {
+        console.warn('⚠️ [Prerender Hook] Kon categorieën niet ophalen:', err)
+      }
+    },
+  },
+})
