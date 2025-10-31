@@ -23,11 +23,11 @@ export default defineNuxtConfig({
     preset: 'netlify', // ⬅️ belangrijk voor Netlify
   },
 
-  // ✅ Toegevoegd – 31-10-2025
-  routeRules: {
-    '/': { static: true },
-    '/**': { isr: 600 }, // hergenereer elke 10 minuten
-  },
+  // // ✅ Toegevoegd – 31-10-2025
+  // routeRules: {
+  //   '/': { static: true },
+  //   '/**': { isr: 600 }, // hergenereer elke 10 minuten
+  // },
 
   vite: {
     plugins: [require('@rollup/plugin-graphql')()],
