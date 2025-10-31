@@ -14,19 +14,13 @@ export default defineNuxtConfig({
 
   nitro: {
     prerender: {
-      concurrency: 2,
-      interval: 2000,
+      concurrency: 10,
+      interval: 1000,
       failOnError: false,
       routes: [],
     },
     minify: true,
-    preset: 'netlify', // ⬅️ belangrijk voor Netlify
-  },
-
-  // ✅ Toegevoegd – 31-10-2025
-  routeRules: {
-    '/': { static: true },
-    '/**': { isr: 600 }, // hergenereer elke 10 minuten
+    preset: 'netlify', // belangrijk voor Netlify
   },
 
   vite: {
@@ -34,7 +28,7 @@ export default defineNuxtConfig({
   },
 
   generate: {
-    fallback: true, // ⬅️ zorgt dat client routes zoals /broeken werken
+    fallback: true, // zorgt dat client routes zoals /broeken werken
   },
 
   hooks: {
@@ -56,13 +50,4 @@ export default defineNuxtConfig({
           }),
         })
         const json = await res.json()
-        const slugs = json?.data?.productCategories?.nodes?.map((n: any) => n.slug) || []
-
-        console.log('✅ [Prerender Hook] Categorieën gevonden:', slugs.length)
-        nitroConfig.prerender.routes.push(...slugs.map((slug: string) => `/${slug}`))
-      } catch (err) {
-        console.warn('⚠️ [Prerender Hook] Kon categorieën niet ophalen:', err)
-      }
-    },
-  },
-})
+        const slugs = json?.data?.prod
