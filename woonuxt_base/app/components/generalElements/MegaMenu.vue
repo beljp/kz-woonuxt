@@ -5,19 +5,32 @@ const { topMenu } = await useCategoryMenu()
 const openIndex = ref<number | null>(null)
 let hoverTimer: ReturnType<typeof setTimeout> | null = null
 
+// ✅ Fix f.clearTimeout issue — 31-10-2025
 function onEnter(i: number) {
-  if (hoverTimer) clearTimeout(hoverTimer)
-  hoverTimer = setTimeout(() => {
+  if (hoverTimer) {
+    clearTimeout(hoverTimer)
+    hoverTimer = null
+  }
+  hoverTimer = window.setTimeout(() => {
     openIndex.value = i
   }, 120)
 }
 
+// ✅ Fix f.clearTimeout issue — 31-10-2025
 function onLeave() {
-  if (hoverTimer) clearTimeout(hoverTimer)
-  hoverTimer = setTimeout(() => {
+  if (hoverTimer) {
+    clearTimeout(hoverTimer)
+    hoverTimer = null
+  }
+  hoverTimer = window.setTimeout(() => {
     openIndex.value = null
   }, 160)
 }
+
+// ✅ Cleanup on component unmount — 31-10-2025
+onUnmounted(() => {
+  if (hoverTimer) clearTimeout(hoverTimer)
+})
 </script>
 
 <template>
