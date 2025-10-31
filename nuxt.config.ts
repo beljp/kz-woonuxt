@@ -20,7 +20,13 @@ export default defineNuxtConfig({
       routes: [],
     },
     minify: true,
-    preset: 'netlify', // belangrijk voor Netlify
+    preset: 'netlify', // ⬅️ belangrijk voor Netlify
+  },
+
+  // ✅ Toegevoegd – 31-10-2025
+  routeRules: {
+    '/': { static: true },
+    '/**': { isr: 600 }, // hergenereer elke 10 minuten
   },
 
   vite: {
@@ -28,7 +34,7 @@ export default defineNuxtConfig({
   },
 
   generate: {
-    fallback: true, // zorgt dat client routes zoals /broeken werken
+    fallback: true, // ⬅️ zorgt dat client routes zoals /broeken werken
   },
 
   hooks: {
