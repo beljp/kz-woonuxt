@@ -2,7 +2,6 @@
 import CategoryCard from '~/components/CategoryCard.vue'
 
 // 💄 Gewenste volgorde van hoofdcategorieën
-// Dames → Heren → Jongens → Meisjes → Baby’s
 const topCategoryIds = [34, 35, 36, 37, 38]
 
 // 🔹 Haal de hoofdcategorieën op in die volgorde
@@ -12,7 +11,6 @@ const parentCategories = computed(() =>
     (a, b) => topCategoryIds.indexOf(a.databaseId) - topCategoryIds.indexOf(b.databaseId)
   ) || []
 )
-
 
 // Actieve tab
 const activeCategory = ref(parentCategories.value?.[0] || null)
@@ -87,21 +85,22 @@ useHead({
           class="space-y-6"
         >
           <!-- Titel van eerste-level subcategorie -->
-            <div class="flex items-center justify-between border-b pb-2">
-              <h2 class="text-xl font-semibold">
-                {{ firstLevelSubs.find(cat => cat.databaseId === Number(parentId))?.name }}
-              </h2>
-              <NuxtLink
-                v-if="firstLevelSubs.find(cat => cat.databaseId === Number(parentId))?.slug"
-                :to="`/${decodeURIComponent(firstLevelSubs.find(cat => cat.databaseId === Number(parentId))?.slug || '')}`"
-                :title="`Bekijk alle ${firstLevelSubs.find(cat => cat.databaseId === Number(parentId))?.name?.toLowerCase()} in ${activeCategory?.name}`"
-                class="text-sm text-gray-400 hover:text-gray-600 transition"
-              >
-                Bekijk alle {{ firstLevelSubs.find(cat => cat.databaseId === Number(parentId))?.name?.toLowerCase() }}
-                <Icon name="ion:arrow-forward-outline" class="inline-block align-middle ml-1" size="14" />
-              </NuxtLink>
+          <div class="flex items-center justify-between border-b pb-2">
+            <h2 class="text-xl font-semibold">
+              {{ firstLevelSubs.find(cat => cat.databaseId === Number(parentId))?.name }}
+            </h2>
 
-</div>
+            <!-- 🔗 NuxtLink aangepast met prefix -->
+            <NuxtLink
+              v-if="firstLevelSubs.find(cat => cat.databaseId === Number(parentId))?.slug"
+              :to="`/product-category/${decodeURIComponent(firstLevelSubs.find(cat => cat.databaseId === Number(parentId))?.slug || '')}/`"
+              :title="`Bekijk alle ${firstLevelSubs.find(cat => cat.databaseId === Number(parentId))?.name?.toLowerCase()} in ${activeCategory?.name}`"
+              class="text-sm text-gray-400 hover:text-gray-600 transition"
+            >
+              Bekijk alle {{ firstLevelSubs.find(cat => cat.databaseId === Number(parentId))?.name?.toLowerCase() }}
+              <Icon name="ion:arrow-forward-outline" class="inline-block align-middle ml-1" size="14" />
+            </NuxtLink>
+          </div>
 
           <!-- Tweede-level subcategorieën -->
           <div
@@ -111,7 +110,7 @@ useHead({
             <CategoryCard
               v-for="(subcategory, i) in subLevelCats"
               :key="subcategory.id"
-              :node="subcategory"
+              :node="{ ...subcategory, uri: `/product-category/${subcategory.slug}/` }"
               :image-loading="i <= 2 ? 'eager' : 'lazy'"
             />
           </div>
