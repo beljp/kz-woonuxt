@@ -43,7 +43,7 @@ useHead({
     <div class="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-16 mt-8">
       <!-- Sidebar -->
       <aside class="order-2 md:order-1">
-        <Filters v-if="storeSettings.showFilters" :hide-categories="true" />
+        <Filters v-if="storeSettings.showFilters" :hide-categories="false" />
       </aside>
 
       <!-- Main Content -->
