@@ -26,17 +26,18 @@ const taxonomies = globalProductAttributes.map((attr) =>
 const { data: currentCategoryData } = await useAsyncGql('getCategoryTreeBySlug', { slug: currentSlug })
 const currentCategory = computed(() => currentCategoryData.value?.productCategory)
 
-// 🪜 Als er een parent is → gebruik die als “hoofd”-categorie
-const parentSlug = currentCategory.value?.parent?.node?.slug
-
+// 🪜 Als de huidige categorie een parent heeft, haal die op (we willen altijd het "niveau" tonen)
 let categoryData
-if (parentSlug) {
-  const { data } = await useAsyncGql('getCategoryTreeBySlug', { slug: parentSlug })
-  categoryData = data
+if (currentCategory.value?.parent?.node?.slug) {
+  const { data: parentData } = await useAsyncGql('getCategoryTreeBySlug', {
+    slug: currentCategory.value.parent.node.slug,
+  })
+  categoryData = parentData
 } else {
   categoryData = currentCategoryData
 }
 
+// ✅ Uiteindelijk tonen we altijd het relevante niveau (parent of huidige)
 const category = computed(() => categoryData.value?.productCategory)
 
   
