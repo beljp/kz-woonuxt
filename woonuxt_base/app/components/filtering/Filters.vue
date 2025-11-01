@@ -79,61 +79,62 @@ const openCategories = ref(true)
 
         <Transition name="slide-fade">
           <div v-show="openCategories">
-            <!-- 🔙 Terug naar parent -->
-            <div v-if="parentCategory" class="mb-3 mt-2">
-              <NuxtLink
-                :to="`/${parentCategory.slug}`"
-                class="text-sm text-gray-500 hover:text-primary transition"
-              >
-                ← Terug naar {{ parentCategory.name }}
-              </NuxtLink>
-            </div>
+         <!-- 🔙 Terug naar parent -->
+<div v-if="parentCategory" class="mb-3 mt-2">
+  <NuxtLink
+    :to="`/product-category/${parentCategory.slug}`"
+    class="text-sm text-gray-500 hover:text-primary transition"
+  >
+    ← Terug naar {{ parentCategory.name }}
+  </NuxtLink>
+</div>
 
-            <!-- 🌿 Boomstructuur -->
-            <ul class="space-y-1">
-              <!-- Ancestors -->
-              <li
-                v-for="(anc, index) in orderedAncestors"
-                :key="anc.id"
-                :style="{ marginLeft: `${index * 10}px` }"
-              >
-                <NuxtLink
-                  :to="`/${anc.slug}`"
-                  class="block font-medium text-gray-700 hover:text-primary transition"
-                >
-                  {{ anc.name }}
-                </NuxtLink>
-              </li>
+<!-- 🌿 Boomstructuur -->
+<ul class="space-y-1">
+  <!-- Ancestors -->
+  <li
+    v-for="(anc, index) in orderedAncestors"
+    :key="anc.id"
+    :style="{ marginLeft: `${index * 10}px` }"
+  >
+    <NuxtLink
+      :to="`/product-category/${anc.slug}`"
+      class="block font-medium text-gray-700 hover:text-primary transition"
+    >
+      {{ anc.name }}
+    </NuxtLink>
+  </li>
 
-              <!-- Huidige categorie -->
-              <li
-                :style="{
-                  marginLeft: `${(orderedAncestors?.length || 0) * 10}px`,
-                }"
-              >
-                <span class="block font-semibold text-gray-900">
-                  {{ category.name }}
-                </span>
+  <!-- Huidige categorie -->
+  <li
+    :style="{
+      marginLeft: `${(orderedAncestors?.length || 0) * 10}px`,
+    }"
+  >
+    <span class="block font-semibold text-gray-900">
+      {{ category.name }}
+    </span>
 
-                <!-- Subcategorieën -->
-                <ul
-                  v-if="subCategories?.length"
-                  class="space-y-1 mt-1 border-l border-gray-200 pl-3"
-                >
-                  <li v-for="sub in subCategories" :key="sub.id">
-                    <NuxtLink
-                      :to="`/${sub.slug}`"
-                      class="block text-gray-700 hover:text-primary transition"
-                      :class="{
-                        'underline text-primary font-medium': sub.slug === currentSlug,
-                      }"
-                    >
-                      {{ sub.name }}
-                    </NuxtLink>
-                  </li>
-                </ul>
-              </li>
-            </ul>
+    <!-- Subcategorieën -->
+    <ul
+      v-if="subCategories?.length"
+      class="space-y-1 mt-1 border-l border-gray-200 pl-3"
+    >
+      <li v-for="sub in subCategories" :key="sub.id">
+        <NuxtLink
+          :to="`/product-category/${sub.slug}`"
+          class="block text-gray-700 hover:text-primary transition"
+          :class="{
+            'underline text-primary font-medium': sub.slug === currentSlug,
+          }"
+        >
+          {{ sub.name }}
+        </NuxtLink>
+      </li>
+    </ul>
+  </li>
+</ul>
+
           </div>
         </Transition>
       </div>
