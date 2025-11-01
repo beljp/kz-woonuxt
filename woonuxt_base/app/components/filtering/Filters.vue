@@ -11,7 +11,8 @@ const route = useRoute()
 const { hideCategories } = defineProps({
   hideCategories: { type: Boolean, default: false },
 })
-const currentSlug = route.params.categorySlug as string
+// const currentSlug = route.params.categorySlug as string
+  const currentSlug = (route.params.categorySlug || route.params.slug) as string
 
 // 🧩 Attributenfilters
 const globalProductAttributes =
