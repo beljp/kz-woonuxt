@@ -34,6 +34,7 @@ useHead({
   ],
 });
 </script>
+
 <template>
   <div class="container">
     <!-- Grid: Sidebar + Main Content -->
@@ -49,7 +50,7 @@ useHead({
         <nav class="text-sm text-gray-500 mb-2">
           <NuxtLink to="/" class="hover:underline">Home</NuxtLink>
           <span class="mx-2">/</span>
-          <NuxtLink to="/dames" class="hover:underline">Dames</NuxtLink>
+          <NuxtLink to="/product-category/dames/" class="hover:underline">Dames</NuxtLink>
           <span class="mx-2">/</span>
           <span class="text-gray-700 font-medium">{{ category?.name }}</span>
         </nav>
