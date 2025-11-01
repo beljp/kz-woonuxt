@@ -22,8 +22,24 @@ const taxonomies = globalProductAttributes.map((attr) =>
 ) as TaxonomyEnum[]
 
 // 🎯 Huidige categorie ophalen
-const { data: categoryData } = await useAsyncGql('getCategoryTreeBySlug', { slug: currentSlug })
+// 🎯 Huidige categorie ophalen (met fallback naar parent voor subcategorieën)
+const { data: currentCategoryData } = await useAsyncGql('getCategoryTreeBySlug', { slug: currentSlug })
+const currentCategory = computed(() => currentCategoryData.value?.productCategory)
+
+// 🪜 Als er een parent is → gebruik die als “hoofd”-categorie
+const parentSlug = currentCategory.value?.parent?.node?.slug
+
+let categoryData
+if (parentSlug) {
+  const { data } = await useAsyncGql('getCategoryTreeBySlug', { slug: parentSlug })
+  categoryData = data
+} else {
+  categoryData = currentCategoryData
+}
+
 const category = computed(() => categoryData.value?.productCategory)
+
+  
 
 // ✅ Ancestors in juiste volgorde (root → parent → current)
 const orderedAncestors = computed(() => {
