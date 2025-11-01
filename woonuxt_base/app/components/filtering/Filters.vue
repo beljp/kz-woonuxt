@@ -11,8 +11,7 @@ const route = useRoute()
 const { hideCategories } = defineProps({
   hideCategories: { type: Boolean, default: false },
 })
-// const currentSlug = route.params.categorySlug as string
-  const currentSlug = (route.params.categorySlug || route.params.slug) as string
+const currentSlug = (route.params.categorySlug || route.params.slug) as string
 
 // 🧩 Attributenfilters
 const globalProductAttributes =
@@ -22,27 +21,28 @@ const taxonomies = globalProductAttributes.map((attr) =>
 ) as TaxonomyEnum[]
 
 // 🎯 Huidige categorie ophalen
-// 🎯 Huidige categorie ophalen (met fallback naar parent voor subcategorieën)
 const { data: currentCategoryData } = await useAsyncGql('getCategoryTreeBySlug', { slug: currentSlug })
 const currentCategory = computed(() => currentCategoryData.value?.productCategory)
 
-// 🪜 Als de huidige categorie een parent heeft, haal die op (we willen altijd het "niveau" tonen)
+// 🪜 Altijd de laatste twee levels tonen
 let categoryData
-if (currentCategory.value?.parent?.node?.slug) {
+
+// 👉 Als huidige categorie GEEN subcategorieën heeft, haal de parent op
+if (!currentCategory.value?.children?.nodes?.length && currentCategory.value?.parent?.node?.slug) {
   const { data: parentData } = await useAsyncGql('getCategoryTreeBySlug', {
     slug: currentCategory.value.parent.node.slug,
   })
   categoryData = parentData
-} else {
+}
+// 👉 Als huidige categorie zelf subcategorieën heeft, toon die
+else {
   categoryData = currentCategoryData
 }
 
-// ✅ Uiteindelijk tonen we altijd het relevante niveau (parent of huidige)
+// ✅ Weergave van de juiste categorieboom
 const category = computed(() => categoryData.value?.productCategory)
-
-  
-
-// ✅ Ancestors in juiste volgorde (root → parent → current)
+const parentCategory = computed(() => category.value?.parent?.node)
+const subCategories = computed(() => category.value?.children?.nodes || [])
 const orderedAncestors = computed(() => {
   const list = category.value?.ancestors?.nodes || []
   return [...list].reverse()
@@ -52,12 +52,6 @@ const orderedAncestors = computed(() => {
 const rootCategory = computed(() =>
   orderedAncestors.value.length ? orderedAncestors.value[0] : category.value
 )
-
-// 📂 Subcategorieën
-const subCategories = computed(() => category.value?.children?.nodes || [])
-
-// 🔙 Parentcategorie
-const parentCategory = computed(() => category.value?.parent?.node)
 
 // 🎨 Attributenfilters
 const { data: termData } = await useAsyncGql('getAllTerms', {
