@@ -79,5 +79,21 @@ useHead({
           <!-- 📱 Mobiele filterknop -->
           <ShowFilterTrigger
             v-if="storeSettings.showFilters"
-            class="md
+            class="md:hidden"
+          />
+        </div>
 
+        <!-- Grid -->
+        <ProductGrid />
+      </section>
+    </div>
+
+    <!-- 📱 Filters overlay (mobiel) -->
+    <Filters
+      v-if="storeSettings.showFilters"
+      :hide-categories="false"
+      class="fixed inset-0 z-[9999] bg-white overflow-y-auto p-6 md:hidden transition-transform duration-300"
+      :class="{ 'translate-y-0': document?.body?.classList.contains('show-filters'), 'translate-y-full': !document?.body?.classList.contains('show-filters') }"
+    />
+  </div>
+</template>
