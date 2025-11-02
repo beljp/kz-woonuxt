@@ -117,6 +117,7 @@ onBeforeUnmount(() => removeBodyClass('show-filters'))
         v-if="isFiltersVisible"
         class="fixed inset-y-0 left-0 z-[9999] w-[70%] bg-white shadow-2xl overflow-y-auto md:hidden transition-transform duration-300 ease-in-out"
       >
+        <!-- Header -->
         <div class="flex justify-between items-center p-4 border-b">
           <h2 class="text-lg font-semibold">Filters</h2>
           <button
@@ -128,9 +129,9 @@ onBeforeUnmount(() => removeBodyClass('show-filters'))
           </button>
         </div>
 
-        <!-- 📋 Filter inhoud -->
-        <div class="p-4">
-          <Filters :hide-categories="false" />
+        <!-- ✅ Consistente padding voor inhoud -->
+        <div class="drawer-content px-5 py-5">
+          <Filters :hide-categories="false" class="w-full" />
         </div>
       </div>
     </transition>
@@ -138,7 +139,7 @@ onBeforeUnmount(() => removeBodyClass('show-filters'))
 </template>
 
 <style scoped>
-/* 🧱 Slide van links naar rechts */
+/* 🧱 Slide animatie van links naar rechts */
 .slide-left-enter-active,
 .slide-left-leave-active {
   transition: transform 0.3s ease, opacity 0.3s ease;
@@ -147,5 +148,18 @@ onBeforeUnmount(() => removeBodyClass('show-filters'))
 .slide-left-leave-to {
   transform: translateX(-100%);
   opacity: 0;
+}
+
+/* 🔧 Padding fix voor de filters-inhoud */
+.drawer-content :deep(.container),
+.drawer-content :deep(.mx-auto) {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.drawer-content :deep(.px-0) {
+  padding-left: 1.25rem !important;  /* = px-5 */
+  padding-right: 1.25rem !important;
 }
 </style>
