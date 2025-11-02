@@ -13,7 +13,7 @@ const productsInCategory = (data.value?.products?.nodes || []) as Product[]
 const category = data.value?.productCategories?.nodes?.[0]
 setProducts(productsInCategory)
 
-// 🔄 Query watcher
+// 🔁 Query watcher
 onMounted(() => {
   if (!isQueryEmpty.value) updateProductList()
 })
@@ -49,34 +49,27 @@ const closeFilters = () => {
   isFiltersVisible.value = false
 }
 
-// Sluit drawer bij escape
-onMounted(() => {
-  const handleEscape = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') closeFilters()
-  }
-  window.addEventListener('keydown', handleEscape)
-  onBeforeUnmount(() => {
-    window.removeEventListener('keydown', handleEscape)
-    removeBodyClass('show-filters')
-  })
-})
+onBeforeUnmount(() => removeBodyClass('show-filters'))
 </script>
 
 <template>
-  <div class="container">
+  <div class="container relative">
     <div class="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-16 mt-8">
       <!-- ✅ Sidebar (desktop only) -->
       <aside class="hidden md:block order-2 md:order-1 space-y-6">
         <Filters v-if="storeSettings.showFilters" :hide-categories="false" />
       </aside>
 
-      <!-- 🛒 Main -->
+      <!-- 🛒 Main content -->
       <section class="order-1 md:order-2 w-full">
         <!-- Breadcrumb -->
         <nav class="text-sm text-gray-500 mb-2">
           <NuxtLink to="/" class="hover:underline">Home</NuxtLink>
           <span class="mx-2">/</span>
-          <NuxtLink to="/product-category/dames/" class="hover:underline">
+          <NuxtLink
+            to="/product-category/dames/"
+            class="hover:underline"
+          >
             Dames
           </NuxtLink>
           <span class="mx-2">/</span>
@@ -117,38 +110,27 @@ onMounted(() => {
       </section>
     </div>
 
-    <!-- 📱 Mobiele drawer -->
-    <transition name="slide-left">
+    <!-- 📱 Mobiele filter drawer (zonder overlay) -->
+    <transition name="slide-in-left">
       <div
         v-if="isFiltersVisible"
-        class="fixed inset-0 z-[9999] flex md:hidden transition-all duration-300 ease-in-out"
+        class="fixed top-0 left-0 z-[9999] h-full w-[70%] bg-white shadow-2xl overflow-y-auto md:hidden transition-transform duration-300 ease-in-out"
       >
-        <!-- Klikbare achtergrond -->
-        <div
-          class="flex-1 bg-transparent"
-          @click="closeFilters"
-        ></div>
+        <!-- Header -->
+        <div class="flex justify-between items-center p-4 border-b">
+          <h2 class="text-lg font-semibold">Filters</h2>
+          <button
+            class="text-gray-600 hover:text-gray-900"
+            aria-label="Sluit filters"
+            @click="closeFilters"
+          >
+            <Icon name="ion:close-outline" size="24" />
+          </button>
+        </div>
 
-        <!-- Drawer zelf -->
-        <div
-          class="w-[70%] bg-white shadow-2xl h-full overflow-y-auto transition-transform duration-300 ease-in-out"
-        >
-          <!-- Header -->
-          <div class="flex justify-between items-center p-4 border-b">
-            <h2 class="text-lg font-semibold">Filters</h2>
-            <button
-              class="text-gray-600 hover:text-gray-900"
-              aria-label="Sluit filters"
-              @click="closeFilters"
-            >
-              <Icon name="ion:close-outline" size="24" />
-            </button>
-          </div>
-
-          <!-- ✅ Inhoud met padding -->
-          <div class="p-5">
-            <Filters :hide-categories="false" class="w-full" />
-          </div>
+        <!-- Inhoud -->
+        <div class="p-5">
+          <Filters :hide-categories="false" class="w-full" />
         </div>
       </div>
     </transition>
@@ -156,20 +138,31 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* 📱 Slide animatie van links */
-.slide-left-enter-active,
-.slide-left-leave-active {
+/* 🔹 Animatie van links */
+.slide-in-left-enter-active,
+.slide-in-left-leave-active {
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
-.slide-left-enter-from,
-.slide-left-leave-to {
+.slide-in-left-enter-from,
+.slide-in-left-leave-to {
   transform: translateX(-100%);
   opacity: 0;
 }
 
-/* 🧱 Fix voor container-padding in Filters */
-:deep(.drawer-content .container),
-:deep(.drawer-content .mx-auto) {
+/* Zorg dat er geen overlay zichtbaar is */
+body.show-filters::before,
+#filters-overlay,
+.filters-overlay,
+.filters-backdrop {
+  display: none !important;
+  background: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Padding fix binnen Filters */
+:deep(.container),
+:deep(.mx-auto) {
   padding-left: 0 !important;
   padding-right: 0 !important;
   margin-left: 0 !important;
