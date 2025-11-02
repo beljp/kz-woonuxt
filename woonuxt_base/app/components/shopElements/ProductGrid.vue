@@ -1,16 +1,32 @@
 <script setup lang="ts">
-const route = useRoute();
-const { productsPerPage } = useHelpers();
-const { products } = useProducts();
-const page = ref(parseInt(route.params.pageNumber as string) || 1);
-const productsToShow = computed(() => products.value.slice((page.value - 1) * productsPerPage, page.value * productsPerPage));
+const route = useRoute()
+const { productsPerPage } = useHelpers()
+const { products } = useProducts()
+const page = ref(parseInt(route.params.pageNumber as string) || 1)
+
+const productsToShow = computed(() =>
+  products.value.slice(
+    (page.value - 1) * productsPerPage,
+    page.value * productsPerPage
+  )
+)
 </script>
 
 <template>
   <Transition name="fade" mode="out-in">
     <section v-if="!!products.length" class="relative w-full">
-      <TransitionGroup name="shrink" tag="div" mode="in-out" class="product-grid">
-        <ProductCard v-for="(node, i) in productsToShow" :key="node.id || i" :node :index="i" />
+      <TransitionGroup
+        name="shrink"
+        tag="div"
+        mode="in-out"
+        class="product-grid"
+      >
+        <ProductCard
+          v-for="(node, i) in productsToShow"
+          :key="node.id || i"
+          :node="node"
+          :index="i"
+        />
       </TransitionGroup>
       <Pagination />
     </section>
@@ -22,15 +38,25 @@ const productsToShow = computed(() => products.value.slice((page.value - 1) * pr
 .product-grid {
   @apply my-4 min-h-[600px] grid transition-all gap-8 lg:my-8;
 
-  grid-template-columns: repeat(2, 1fr);
+  /* 📱 Mobiel: van 2 → 3 */
+  grid-template-columns: repeat(3, 1fr);
 }
+
 .product-grid:empty {
   display: none;
 }
 
+/* 💻 Tablet: van 3 → 4 */
 @media (min-width: 768px) {
   .product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 🖥️ Desktop: van 4 → 5 */
+@media (min-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(5, 1fr);
   }
 }
 
