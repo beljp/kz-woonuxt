@@ -11,20 +11,20 @@ const route = useRoute()
 const { hideCategories } = defineProps({
   hideCategories: { type: Boolean, default: false },
 })
+
 const currentSlug = (route.params.categorySlug || route.params.slug) as string
 
-// 🧩 Attributenfilters
+// 🧩 Attributenfilters ophalen uit runtimeConfig
 const globalProductAttributes =
   (runtimeConfig?.public?.GLOBAL_PRODUCT_ATTRIBUTES as WooNuxtFilter[]) || []
 const taxonomies = globalProductAttributes.map((attr) =>
   attr?.slug?.toUpperCase().replace(/_/g, '')
 ) as TaxonomyEnum[]
 
-// 🎯 Huidige categorie ophalen
+// 🧭 Categorieboom ophalen
 const { data: currentCategoryData } = await useAsyncGql('getCategoryTreeBySlug', { slug: currentSlug })
 const currentCategory = computed(() => currentCategoryData.value?.productCategory)
 
-// 🔁 Parent ophalen (voor siblings)
 let categoryData
 if (currentCategory.value?.parent?.node?.slug) {
   const { data: parentData } = await useAsyncGql('getCategoryTreeBySlug', {
@@ -35,7 +35,6 @@ if (currentCategory.value?.parent?.node?.slug) {
   categoryData = currentCategoryData
 }
 
-// ✅ Toon altijd de parentcategorie met alle siblings
 const category = computed(() => categoryData.value?.productCategory)
 const siblings = computed(() => category.value?.children?.nodes || [])
 const parentCategory = computed(() => category.value?.parent?.node)
@@ -45,13 +44,11 @@ const orderedAncestors = computed(() => {
   const list = currentCategory.value?.ancestors?.nodes || []
   return [...list].reverse()
 })
-
-// 🧭 Rootcategorie
 const rootCategory = computed(() =>
   orderedAncestors.value.length ? orderedAncestors.value[0] : currentCategory.value
 )
 
-// 🎨 Attributenfilters
+// 🎨 Attributenfilters ophalen
 const { data: termData } = await useAsyncGql('getAllTerms', {
   taxonomies: [...taxonomies, TaxonomyEnum.PRODUCTCATEGORY],
 })
@@ -65,11 +62,12 @@ const openCategories = ref(true)
 </script>
 
 <template>
-  <aside id="filters">
-    <OrderByDropdown class="block w-full md:hidden" />
+  <aside id="filters" class="fixed md:static top-0 left-0 h-full md:h-auto bg-white md:bg-transparent z-50 md:z-auto w-[80%] md:w-[280px] overflow-y-auto transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 show-filters:translate-x-0">
+    <!-- 📱 Sorteeroptie boven filters (alleen mobiel) -->
+    <OrderByDropdown class="block w-full md:hidden p-4" />
 
-    <div class="relative z-30 grid mb-12 space-y-8 divide-y">
-      <!-- 📂 Categorieboom -->
+    <div class="relative grid mb-12 space-y-8 divide-y p-4 md:p-0">
+      <!-- 📂 Categorieën -->
       <div v-if="!hideCategories && category" class="pt-4">
         <div
           class="flex justify-between items-center cursor-pointer"
@@ -99,19 +97,16 @@ const openCategories = ref(true)
 
             <!-- 🌿 Boomstructuur -->
             <ul class="space-y-1">
-              <!-- Siblings op hetzelfde niveau -->
               <li v-for="sibling in siblings" :key="sibling.id">
                 <NuxtLink
                   :to="`/product-category/${sibling.slug}`"
                   class="block font-medium text-gray-700 hover:text-primary transition"
-                  :class="{
-                    'font-semibold text-primary underline': sibling.slug === currentSlug,
-                  }"
+                  :class="{ 'font-semibold text-primary underline': sibling.slug === currentSlug }"
                 >
                   {{ sibling.name }}
                 </NuxtLink>
 
-                <!-- Als dit de huidige categorie is, toon de subcategorieën -->
+                <!-- Subcategorieën -->
                 <ul
                   v-if="sibling.slug === currentSlug && hasSubCategories"
                   class="space-y-1 mt-1 border-l border-gray-200 pl-3"
@@ -120,9 +115,7 @@ const openCategories = ref(true)
                     <NuxtLink
                       :to="`/product-category/${sub.slug}`"
                       class="block text-gray-700 hover:text-primary transition"
-                      :class="{
-                        'underline text-primary font-medium': sub.slug === currentSlug,
-                      }"
+                      :class="{ 'underline text-primary font-medium': sub.slug === currentSlug }"
                     >
                       {{ sub.name }}
                     </NuxtLink>
@@ -150,75 +143,62 @@ const openCategories = ref(true)
         <GlobalFilter v-else :attribute />
       </div>
 
-      <!-- 🔖 Sale & Review filters -->
+      <!-- 🔖 Sale & Reviews -->
       <OnSaleFilter v-if="storeSettings.showFilters" />
       <LazyStarRatingFilter v-if="storeSettings.showReviews" />
+
+      <!-- 🔄 Reset-knop -->
       <LazyResetFiltersButton v-if="isFiltersActive" />
     </div>
   </aside>
 
-  <!-- Overlay voor mobiele filters -->
+  <!-- 📱 Overlay (mobiel) -->
   <div
-    class="fixed inset-0 z-50 hidden bg-black opacity-25 filter-overlay"
+    class="fixed inset-0 z-40 bg-black bg-opacity-30 hidden md:hidden"
+    :class="{ '!block': document?.body?.classList.contains('show-filters') }"
     @click="removeBodyClass('show-filters')"
   ></div>
 </template>
 
 <style scoped lang="postcss">
+/* 📱 Sidebar slide-in effect */
+.show-filters #filters {
+  @apply translate-x-0;
+}
 #filters {
-  @apply w-[280px];
+  @apply -translate-x-full md:translate-x-0;
+  transition: transform 0.3s ease;
 }
 
+/* 🧭 Categorie stijl */
 ul {
   @apply list-none pl-0;
 }
-
 ul ul {
   @apply ml-4 border-l border-gray-100 pl-3;
 }
 
+/* 🔠 Tekststijlen */
 a {
   @apply text-base text-gray-700;
 }
-
 a.underline {
   text-decoration-thickness: 1.5px;
   text-underline-offset: 2px;
 }
-
 a:hover {
   @apply text-primary;
 }
 
-span.font-semibold {
-  @apply text-base;
-}
-
-.show-filters .filter-overlay {
-  @apply block;
-}
-
-.show-filters {
-  overflow: hidden;
-}
-
-/* Animatie voor accordion */
+/* Animatie categorie-accordion */
 .slide-fade-enter-active,
 .slide-fade-leave-active {
   transition: all 0.3s ease;
 }
-
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   opacity: 0;
   max-height: 0;
   transform: translateY(-5px);
-}
-
-.slide-fade-enter-to,
-.slide-fade-leave-from {
-  opacity: 1;
-  max-height: 1000px;
-  transform: translateY(0);
 }
 </style>
