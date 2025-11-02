@@ -13,7 +13,7 @@ const productsInCategory = (data.value?.products?.nodes || []) as Product[]
 const category = data.value?.productCategories?.nodes?.[0]
 setProducts(productsInCategory)
 
-// 🔁 Query watcher
+// 🔁 Filters opnieuw laden bij query-wijziging
 onMounted(() => {
   if (!isQueryEmpty.value) updateProductList()
 })
@@ -40,16 +40,32 @@ useHead({
 
 // 📱 Drawer state
 const isFiltersVisible = ref(false)
+const sidebarRef = ref<HTMLElement | null>(null)
+
 const openFilters = () => {
   toggleBodyClass('show-filters')
   isFiltersVisible.value = true
 }
+
 const closeFilters = () => {
   removeBodyClass('show-filters')
   isFiltersVisible.value = false
 }
 
-onBeforeUnmount(() => removeBodyClass('show-filters'))
+// Sluit als je buiten klikt
+const handleClickOutside = (e: MouseEvent) => {
+  if (sidebarRef.value && !sidebarRef.value.contains(e.target as Node)) {
+    closeFilters()
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+  removeBodyClass('show-filters')
+})
 </script>
 
 <template>
@@ -99,7 +115,7 @@ onBeforeUnmount(() => removeBodyClass('show-filters'))
             v-if="storeSettings.showFilters"
             class="md:hidden relative inline-flex items-center p-2 text-sm text-gray-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
             aria-label="Toon filters"
-            @click="openFilters"
+            @click.stop="openFilters"
           >
             <Icon name="ion:funnel-outline" size="18" />
           </button>
@@ -110,10 +126,11 @@ onBeforeUnmount(() => removeBodyClass('show-filters'))
       </section>
     </div>
 
-    <!-- 📱 Mobiele filter drawer (zonder overlay) -->
+    <!-- 📱 Mobiele filter drawer zonder overlay -->
     <transition name="slide-in-left">
       <div
         v-if="isFiltersVisible"
+        ref="sidebarRef"
         class="fixed top-0 left-0 z-[9999] h-full w-[70%] bg-white shadow-2xl overflow-y-auto md:hidden transition-transform duration-300 ease-in-out"
       >
         <!-- Header -->
@@ -122,7 +139,7 @@ onBeforeUnmount(() => removeBodyClass('show-filters'))
           <button
             class="text-gray-600 hover:text-gray-900"
             aria-label="Sluit filters"
-            @click="closeFilters"
+            @click.stop="closeFilters"
           >
             <Icon name="ion:close-outline" size="24" />
           </button>
@@ -149,7 +166,7 @@ onBeforeUnmount(() => removeBodyClass('show-filters'))
   opacity: 0;
 }
 
-/* Zorg dat er geen overlay zichtbaar is */
+/* 💡 Verberg alle mogelijke overlays uit Woonuxt zelf */
 body.show-filters::before,
 #filters-overlay,
 .filters-overlay,
@@ -158,14 +175,5 @@ body.show-filters::before,
   background: none !important;
   opacity: 0 !important;
   pointer-events: none !important;
-}
-
-/* Padding fix binnen Filters */
-:deep(.container),
-:deep(.mx-auto) {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
 }
 </style>
