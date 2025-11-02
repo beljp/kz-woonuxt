@@ -11,10 +11,9 @@ const slug = route.params.slug
 const { data } = await useAsyncGql('getProducts', { slug })
 const productsInCategory = (data.value?.products?.nodes || []) as Product[]
 const category = data.value?.productCategories?.nodes?.[0]
-
 setProducts(productsInCategory)
 
-// 🔄 Filter update bij query-wijziging
+// 🔄 Query watcher
 onMounted(() => {
   if (!isQueryEmpty.value) updateProductList()
 })
@@ -39,7 +38,7 @@ useHead({
   ],
 })
 
-// 📱 Mobiele filter overlay state
+// 📱 Drawer state
 const isFiltersVisible = ref(false)
 const openFilters = () => {
   toggleBodyClass('show-filters')
@@ -49,7 +48,18 @@ const closeFilters = () => {
   removeBodyClass('show-filters')
   isFiltersVisible.value = false
 }
-onBeforeUnmount(() => removeBodyClass('show-filters'))
+
+// Sluit drawer bij escape
+onMounted(() => {
+  const handleEscape = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') closeFilters()
+  }
+  window.addEventListener('keydown', handleEscape)
+  onBeforeUnmount(() => {
+    window.removeEventListener('keydown', handleEscape)
+    removeBodyClass('show-filters')
+  })
+})
 </script>
 
 <template>
@@ -60,16 +70,13 @@ onBeforeUnmount(() => removeBodyClass('show-filters'))
         <Filters v-if="storeSettings.showFilters" :hide-categories="false" />
       </aside>
 
-      <!-- 🛒 Main content -->
+      <!-- 🛒 Main -->
       <section class="order-1 md:order-2 w-full">
         <!-- Breadcrumb -->
         <nav class="text-sm text-gray-500 mb-2">
           <NuxtLink to="/" class="hover:underline">Home</NuxtLink>
           <span class="mx-2">/</span>
-          <NuxtLink
-            to="/product-category/dames/"
-            class="hover:underline"
-          >
+          <NuxtLink to="/product-category/dames/" class="hover:underline">
             Dames
           </NuxtLink>
           <span class="mx-2">/</span>
@@ -94,12 +101,11 @@ onBeforeUnmount(() => removeBodyClass('show-filters'))
             v-if="storeSettings.showOrderByDropdown"
             class="hidden md:inline-flex"
           />
-          <!-- 📱 Mobiele filterknop -->
+          <!-- 📱 Filter knop -->
           <button
             v-if="storeSettings.showFilters"
-            class="md:hidden relative inline-flex items-center p-2 text-sm text-gray-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:z-20"
+            class="md:hidden relative inline-flex items-center p-2 text-sm text-gray-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
             aria-label="Toon filters"
-            title="Toon filters"
             @click="openFilters"
           >
             <Icon name="ion:funnel-outline" size="18" />
@@ -111,27 +117,38 @@ onBeforeUnmount(() => removeBodyClass('show-filters'))
       </section>
     </div>
 
-    <!-- 📱 Mobiele filterdrawer -->
+    <!-- 📱 Mobiele drawer -->
     <transition name="slide-left">
       <div
         v-if="isFiltersVisible"
-        class="fixed inset-y-0 left-0 z-[9999] w-[70%] bg-white shadow-2xl overflow-y-auto md:hidden transition-transform duration-300 ease-in-out"
+        class="fixed inset-0 z-[9999] flex md:hidden transition-all duration-300 ease-in-out"
       >
-        <!-- Header -->
-        <div class="flex justify-between items-center p-4 border-b">
-          <h2 class="text-lg font-semibold">Filters</h2>
-          <button
-            class="text-gray-600 hover:text-gray-900"
-            aria-label="Sluit filters"
-            @click="closeFilters"
-          >
-            <Icon name="ion:close-outline" size="24" />
-          </button>
-        </div>
+        <!-- Klikbare achtergrond -->
+        <div
+          class="flex-1 bg-transparent"
+          @click="closeFilters"
+        ></div>
 
-        <!-- ✅ Consistente padding voor inhoud -->
-        <div class="drawer-content px-5 py-5">
-          <Filters :hide-categories="false" class="w-full" />
+        <!-- Drawer zelf -->
+        <div
+          class="w-[70%] bg-white shadow-2xl h-full overflow-y-auto transition-transform duration-300 ease-in-out"
+        >
+          <!-- Header -->
+          <div class="flex justify-between items-center p-4 border-b">
+            <h2 class="text-lg font-semibold">Filters</h2>
+            <button
+              class="text-gray-600 hover:text-gray-900"
+              aria-label="Sluit filters"
+              @click="closeFilters"
+            >
+              <Icon name="ion:close-outline" size="24" />
+            </button>
+          </div>
+
+          <!-- ✅ Inhoud met padding -->
+          <div class="p-5">
+            <Filters :hide-categories="false" class="w-full" />
+          </div>
         </div>
       </div>
     </transition>
@@ -139,7 +156,7 @@ onBeforeUnmount(() => removeBodyClass('show-filters'))
 </template>
 
 <style scoped>
-/* 🧱 Slide animatie van links naar rechts */
+/* 📱 Slide animatie van links */
 .slide-left-enter-active,
 .slide-left-leave-active {
   transition: transform 0.3s ease, opacity 0.3s ease;
@@ -150,16 +167,12 @@ onBeforeUnmount(() => removeBodyClass('show-filters'))
   opacity: 0;
 }
 
-/* 🔧 Padding fix voor de filters-inhoud */
-.drawer-content :deep(.container),
-.drawer-content :deep(.mx-auto) {
+/* 🧱 Fix voor container-padding in Filters */
+:deep(.drawer-content .container),
+:deep(.drawer-content .mx-auto) {
   padding-left: 0 !important;
   padding-right: 0 !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
-}
-.drawer-content :deep(.px-0) {
-  padding-left: 1.25rem !important;  /* = px-5 */
-  padding-right: 1.25rem !important;
 }
 </style>
