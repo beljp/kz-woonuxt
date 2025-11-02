@@ -24,33 +24,31 @@ const taxonomies = globalProductAttributes.map((attr) =>
 const { data: currentCategoryData } = await useAsyncGql('getCategoryTreeBySlug', { slug: currentSlug })
 const currentCategory = computed(() => currentCategoryData.value?.productCategory)
 
-// 🪜 Altijd de laatste twee levels tonen
+// 🔁 Parent ophalen (voor siblings)
 let categoryData
-
-// 👉 Als huidige categorie GEEN subcategorieën heeft, haal de parent op
-if (!currentCategory.value?.children?.nodes?.length && currentCategory.value?.parent?.node?.slug) {
+if (currentCategory.value?.parent?.node?.slug) {
   const { data: parentData } = await useAsyncGql('getCategoryTreeBySlug', {
     slug: currentCategory.value.parent.node.slug,
   })
   categoryData = parentData
-}
-// 👉 Als huidige categorie zelf subcategorieën heeft, toon die
-else {
+} else {
   categoryData = currentCategoryData
 }
 
-// ✅ Weergave van de juiste categorieboom
+// ✅ Toon altijd de parentcategorie met alle siblings
 const category = computed(() => categoryData.value?.productCategory)
+const siblings = computed(() => category.value?.children?.nodes || [])
 const parentCategory = computed(() => category.value?.parent?.node)
-const subCategories = computed(() => category.value?.children?.nodes || [])
+const hasSubCategories = computed(() => currentCategory.value?.children?.nodes?.length > 0)
+const subCategories = computed(() => currentCategory.value?.children?.nodes || [])
 const orderedAncestors = computed(() => {
-  const list = category.value?.ancestors?.nodes || []
+  const list = currentCategory.value?.ancestors?.nodes || []
   return [...list].reverse()
 })
 
 // 🧭 Rootcategorie
 const rootCategory = computed(() =>
-  orderedAncestors.value.length ? orderedAncestors.value[0] : category.value
+  orderedAncestors.value.length ? orderedAncestors.value[0] : currentCategory.value
 )
 
 // 🎨 Attributenfilters
@@ -63,7 +61,6 @@ const attributesWithTerms = globalProductAttributes.map((attr) => ({
   terms: terms.filter((term) => term.taxonomyName === attr.slug),
 }))
 
-// 🎬 Accordion state
 const openCategories = ref(true)
 </script>
 
@@ -90,62 +87,49 @@ const openCategories = ref(true)
 
         <Transition name="slide-fade">
           <div v-show="openCategories">
-         <!-- 🔙 Terug naar parent -->
-<div v-if="parentCategory" class="mb-3 mt-2">
-  <NuxtLink
-    :to="`/product-category/${parentCategory.slug}`"
-    class="text-sm text-gray-500 hover:text-primary transition"
-  >
-    ← Terug naar {{ parentCategory.name }}
-  </NuxtLink>
-</div>
+            <!-- 🔙 Terug naar parent -->
+            <div v-if="parentCategory" class="mb-3 mt-2">
+              <NuxtLink
+                :to="`/product-category/${parentCategory.slug}`"
+                class="text-sm text-gray-500 hover:text-primary transition"
+              >
+                ← Terug naar {{ parentCategory.name }}
+              </NuxtLink>
+            </div>
 
-<!-- 🌿 Boomstructuur -->
-<ul class="space-y-1">
-  <!-- Ancestors -->
-  <li
-    v-for="(anc, index) in orderedAncestors"
-    :key="anc.id"
-    :style="{ marginLeft: `${index * 10}px` }"
-  >
-    <NuxtLink
-      :to="`/product-category/${anc.slug}`"
-      class="block font-medium text-gray-700 hover:text-primary transition"
-    >
-      {{ anc.name }}
-    </NuxtLink>
-  </li>
+            <!-- 🌿 Boomstructuur -->
+            <ul class="space-y-1">
+              <!-- Siblings op hetzelfde niveau -->
+              <li v-for="sibling in siblings" :key="sibling.id">
+                <NuxtLink
+                  :to="`/product-category/${sibling.slug}`"
+                  class="block font-medium text-gray-700 hover:text-primary transition"
+                  :class="{
+                    'font-semibold text-primary underline': sibling.slug === currentSlug,
+                  }"
+                >
+                  {{ sibling.name }}
+                </NuxtLink>
 
-  <!-- Huidige categorie -->
-  <li
-    :style="{
-      marginLeft: `${(orderedAncestors?.length || 0) * 10}px`,
-    }"
-  >
-    <span class="block font-semibold text-gray-900">
-      {{ category.name }}
-    </span>
-
-    <!-- Subcategorieën -->
-    <ul
-      v-if="subCategories?.length"
-      class="space-y-1 mt-1 border-l border-gray-200 pl-3"
-    >
-      <li v-for="sub in subCategories" :key="sub.id">
-        <NuxtLink
-          :to="`/product-category/${sub.slug}`"
-          class="block text-gray-700 hover:text-primary transition"
-          :class="{
-            'underline text-primary font-medium': sub.slug === currentSlug,
-          }"
-        >
-          {{ sub.name }}
-        </NuxtLink>
-      </li>
-    </ul>
-  </li>
-</ul>
-
+                <!-- Als dit de huidige categorie is, toon de subcategorieën -->
+                <ul
+                  v-if="sibling.slug === currentSlug && hasSubCategories"
+                  class="space-y-1 mt-1 border-l border-gray-200 pl-3"
+                >
+                  <li v-for="sub in subCategories" :key="sub.id">
+                    <NuxtLink
+                      :to="`/product-category/${sub.slug}`"
+                      class="block text-gray-700 hover:text-primary transition"
+                      :class="{
+                        'underline text-primary font-medium': sub.slug === currentSlug,
+                      }"
+                    >
+                      {{ sub.name }}
+                    </NuxtLink>
+                  </li>
+                </ul>
+              </li>
+            </ul>
           </div>
         </Transition>
       </div>
@@ -154,7 +138,11 @@ const openCategories = ref(true)
       <PriceFilter v-if="storeSettings.showFilters" />
 
       <!-- 🎨 Attributenfilters -->
-      <div v-if="storeSettings.showFilters" v-for="attribute in attributesWithTerms" :key="attribute.slug">
+      <div
+        v-if="storeSettings.showFilters"
+        v-for="attribute in attributesWithTerms"
+        :key="attribute.slug"
+      >
         <ColorFilter
           v-if="attribute.slug == 'pa_color' || attribute.slug == 'pa_colour'"
           :attribute
@@ -162,12 +150,14 @@ const openCategories = ref(true)
         <GlobalFilter v-else :attribute />
       </div>
 
+      <!-- 🔖 Sale & Review filters -->
       <OnSaleFilter v-if="storeSettings.showFilters" />
       <LazyStarRatingFilter v-if="storeSettings.showReviews" />
       <LazyResetFiltersButton v-if="isFiltersActive" />
     </div>
   </aside>
 
+  <!-- Overlay voor mobiele filters -->
   <div
     class="fixed inset-0 z-50 hidden bg-black opacity-25 filter-overlay"
     @click="removeBodyClass('show-filters')"
