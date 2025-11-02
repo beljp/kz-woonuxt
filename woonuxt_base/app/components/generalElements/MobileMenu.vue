@@ -13,20 +13,15 @@ const isOpen = computed({
   set: (v: boolean) => emit('update:open', v)
 })
 
-// --- helpers ---
-function cleanUri (uri: string): string {
-  if (!uri) return '/'
-  const noPc = uri.replace('/product-category', '').replace(/\/$/, '')
-  const parts = noPc.split('/').filter(Boolean)
-  return '/' + (parts.pop() || '')
-}
+// ❌ cleanUri kan weg, je gebruikt /product-category/ direct
+// function cleanUri (...) { ... }  <-- VERWIJDER DIT HELE BLOK
 
-// body scroll lock (simpel & effectief)
+// body scroll lock
 watch(isOpen, (v) => {
   if (process.client) document.documentElement.style.overflow = v ? 'hidden' : ''
 })
 
-// --- layered state ---
+// layered state ...
 type Layer0Item = { label: string; uri: string; columns: Layer1Item[] }
 type Layer1Item = { title: string; uri: string; items: Layer2Item[] }
 type Layer2Item = { label: string; uri: string }
@@ -35,7 +30,6 @@ const layer = ref<0 | 1 | 2>(0)
 const sel0 = ref<Layer0Item | null>(null)
 const sel1 = ref<Layer1Item | null>(null)
 
-// map composable-structuur generiek
 const layer0 = computed<Layer0Item[]>(() =>
   (topMenu.value || []).map(i => ({
     label: i.label,
@@ -48,40 +42,36 @@ const layer0 = computed<Layer0Item[]>(() =>
   }))
 )
 
-function openLayer1(item: Layer0Item) {
-  sel0.value = item
-  sel1.value = null
-  layer.value = 1
-}
-
-function openLayer2(col: Layer1Item) {
-  sel1.value = col
-  layer.value = 2
-}
-
+function openLayer1(item: Layer0Item) { sel0.value = item; sel1.value = null; layer.value = 1 }
+function openLayer2(col: Layer1Item) { sel1.value = col; layer.value = 2 }
 function goBack() {
   if (layer.value === 2) { layer.value = 1; sel1.value = null; return }
   if (layer.value === 1) { layer.value = 0; sel0.value = null; return }
   close()
 }
 
+// ✅ guard MOET buiten de functie staan
+let closing = false
+
 function close() {
-  let closing = false
   if (closing) return
   closing = true
   isOpen.value = false
   layer.value = 0
   sel0.value = null
   sel1.value = null
-  setTimeout(() => closing = false, 300) // wacht tot transition klaar is
+  // laat de transition afronden (250ms in je CSS, 300ms is veilig)
+  setTimeout(() => { closing = false }, 300)
 }
-
 
 async function go(url: string) {
+  // sluit eerst netjes (triggert overlay fade-out)
   close()
-  await navigateTo(cleanUri(url))
+  // navigeer direct naar de meegegeven URL
+  await navigateTo(url)
 }
 </script>
+
 
 <template>
 
