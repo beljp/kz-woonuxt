@@ -11,7 +11,6 @@ const route = useRoute()
 const { hideCategories } = defineProps({
   hideCategories: { type: Boolean, default: false },
 })
-
 const currentSlug = (route.params.categorySlug || route.params.slug) as string
 
 // 🧩 Attributenfilters ophalen uit runtimeConfig
@@ -62,7 +61,23 @@ const openCategories = ref(true)
 </script>
 
 <template>
-  <aside id="filters" class="fixed md:static top-0 left-0 h-full md:h-auto bg-white md:bg-transparent z-50 md:z-auto w-[80%] md:w-[280px] overflow-y-auto transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 show-filters:translate-x-0">
+  <!-- 📱 Mobiele + desktop filters -->
+  <aside
+    id="filters"
+    class="fixed md:static top-0 left-0 h-full md:h-auto bg-white md:bg-transparent z-50 md:z-auto w-[85%] md:w-[280px] overflow-y-auto transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 show-filters:translate-x-0 shadow-xl"
+  >
+    <!-- 🧭 Header (mobiel zichtbaar) -->
+    <div class="flex items-center justify-between p-4 border-b md:hidden">
+      <h2 class="text-lg font-semibold text-gray-900">Filters</h2>
+      <button
+        @click="removeBodyClass('show-filters')"
+        aria-label="Sluit filters"
+        class="text-gray-600 hover:text-gray-900 transition"
+      >
+        <Icon name="ion:close-outline" size="24" />
+      </button>
+    </div>
+
     <!-- 📱 Sorteeroptie boven filters (alleen mobiel) -->
     <OrderByDropdown class="block w-full md:hidden p-4" />
 
@@ -85,7 +100,6 @@ const openCategories = ref(true)
 
         <Transition name="slide-fade">
           <div v-show="openCategories">
-            <!-- 🔙 Terug naar parent -->
             <div v-if="parentCategory" class="mb-3 mt-2">
               <NuxtLink
                 :to="`/product-category/${parentCategory.slug}`"
@@ -95,7 +109,6 @@ const openCategories = ref(true)
               </NuxtLink>
             </div>
 
-            <!-- 🌿 Boomstructuur -->
             <ul class="space-y-1">
               <li v-for="sibling in siblings" :key="sibling.id">
                 <NuxtLink
@@ -106,7 +119,6 @@ const openCategories = ref(true)
                   {{ sibling.name }}
                 </NuxtLink>
 
-                <!-- Subcategorieën -->
                 <ul
                   v-if="sibling.slug === currentSlug && hasSubCategories"
                   class="space-y-1 mt-1 border-l border-gray-200 pl-3"
@@ -152,13 +164,12 @@ const openCategories = ref(true)
     </div>
   </aside>
 
-  <!-- 📱 Overlay (mobiel) -->
-<div
-  class="fixed inset-0 z-40 bg-black bg-opacity-30 hidden md:hidden"
-  :class="{ '!block': document?.body?.classList.contains('show-filters') }"
-  @click.self="removeBodyClass('show-filters')"
-></div>
-  
+  <!-- 📱 Overlay -->
+  <div
+    class="fixed inset-0 z-40 bg-black bg-opacity-30 hidden md:hidden"
+    :class="{ '!block': document?.body?.classList.contains('show-filters') }"
+    @click.self="removeBodyClass('show-filters')"
+  ></div>
 </template>
 
 <style scoped lang="postcss">
