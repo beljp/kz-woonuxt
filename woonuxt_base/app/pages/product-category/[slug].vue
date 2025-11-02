@@ -7,17 +7,17 @@ const { storeSettings } = useAppConfig()
 const route = useRoute()
 const slug = route.params.slug
 
-// 📦 Data ophalen
+// 🧩 Producten & categorie ophalen
 const { data } = await useAsyncGql('getProducts', { slug })
 const productsInCategory = (data.value?.products?.nodes || []) as Product[]
 const category = data.value?.productCategories?.nodes?.[0]
 
 setProducts(productsInCategory)
 
+// 🔄 Filter update bij query-wijziging
 onMounted(() => {
   if (!isQueryEmpty.value) updateProductList()
 })
-
 watch(
   () => route.query,
   () => {
@@ -26,7 +26,7 @@ watch(
   },
 )
 
-// 🧭 SEO
+// 🧠 SEO
 useHead({
   title: category?.name || 'Categorie',
   meta: [
@@ -39,22 +39,17 @@ useHead({
   ],
 })
 
-// 🧩 Mobiele filter overlay state
+// 📱 Mobiele filter overlay state
 const isFiltersVisible = ref(false)
-
 const openFilters = () => {
   toggleBodyClass('show-filters')
   isFiltersVisible.value = true
 }
-
 const closeFilters = () => {
   removeBodyClass('show-filters')
   isFiltersVisible.value = false
 }
-
-onBeforeUnmount(() => {
-  removeBodyClass('show-filters')
-})
+onBeforeUnmount(() => removeBodyClass('show-filters'))
 </script>
 
 <template>
@@ -65,13 +60,18 @@ onBeforeUnmount(() => {
         <Filters v-if="storeSettings.showFilters" :hide-categories="false" />
       </aside>
 
-      <!-- 🛒 Main -->
+      <!-- 🛒 Main content -->
       <section class="order-1 md:order-2 w-full">
         <!-- Breadcrumb -->
         <nav class="text-sm text-gray-500 mb-2">
           <NuxtLink to="/" class="hover:underline">Home</NuxtLink>
           <span class="mx-2">/</span>
-          <NuxtLink to="/product-category/dames/" class="hover:underline">Dames</NuxtLink>
+          <NuxtLink
+            to="/product-category/dames/"
+            class="hover:underline"
+          >
+            Dames
+          </NuxtLink>
           <span class="mx-2">/</span>
           <span class="text-gray-700 font-medium">{{ category?.name }}</span>
         </nav>
@@ -94,7 +94,6 @@ onBeforeUnmount(() => {
             v-if="storeSettings.showOrderByDropdown"
             class="hidden md:inline-flex"
           />
-
           <!-- 📱 Mobiele filterknop -->
           <button
             v-if="storeSettings.showFilters"
@@ -107,16 +106,16 @@ onBeforeUnmount(() => {
           </button>
         </div>
 
-        <!-- Product grid -->
+        <!-- Productgrid -->
         <ProductGrid />
       </section>
     </div>
 
-    <!-- 📱 Mobiele filters overlay -->
+    <!-- 📱 Mobiele filterdrawer -->
     <transition name="slide-left">
       <div
         v-if="isFiltersVisible"
-        class="fixed inset-y-0 left-0 z-[9999] w-4/5 bg-white shadow-2xl overflow-y-auto md:hidden transition-transform duration-300 ease-in-out"
+        class="fixed inset-y-0 left-0 z-[9999] w-[70%] bg-white shadow-2xl overflow-y-auto md:hidden transition-transform duration-300 ease-in-out"
       >
         <div class="flex justify-between items-center p-4 border-b">
           <h2 class="text-lg font-semibold">Filters</h2>
@@ -129,14 +128,17 @@ onBeforeUnmount(() => {
           </button>
         </div>
 
-        <Filters :hide-categories="false" />
+        <!-- 📋 Filter inhoud -->
+        <div class="p-4">
+          <Filters :hide-categories="false" />
+        </div>
       </div>
     </transition>
   </div>
 </template>
 
 <style scoped>
-/* 🧱 Animatie van links naar rechts */
+/* 🧱 Slide van links naar rechts */
 .slide-left-enter-active,
 .slide-left-leave-active {
   transition: transform 0.3s ease, opacity 0.3s ease;
