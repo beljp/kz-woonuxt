@@ -79,14 +79,15 @@ async function go(url: string) {
 </script>
 
 <template>
-  <!-- overlay -->
-  <div v-if="isOpen" class="fixed inset-0 bg-light-500/40 z-40" @click="close" />
 
-  <!-- drawer -->
-  <Transition name="slide-left">
-    <aside
-      v-if="isOpen"
-      class="fixed top-0 left-0 h-full w-[80%] max-w-sm bg-white z-50 shadow-xl flex flex-col"
+  <!-- overlay -->
+<div v-if="isOpen" class="fixed inset-0 bg-black/40 z-30" @click="close" />
+
+<!-- drawer -->
+<Transition name="slide-left">
+  <aside
+    v-if="isOpen"
+    class="fixed top-0 left-0 h-full w-[80%] max-w-sm bg-white z-40 shadow-xl flex flex-col"
       role="dialog" aria-modal="true" aria-label="Hoofdmenu"
     >
       <!-- header -->
