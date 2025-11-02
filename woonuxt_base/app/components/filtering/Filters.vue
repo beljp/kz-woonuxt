@@ -153,11 +153,12 @@ const openCategories = ref(true)
   </aside>
 
   <!-- 📱 Overlay (mobiel) -->
-  <div
-    class="fixed inset-0 z-40 bg-black bg-opacity-30 hidden md:hidden"
-    :class="{ '!block': document?.body?.classList.contains('show-filters') }"
-    @click="removeBodyClass('show-filters')"
-  ></div>
+<div
+  class="fixed inset-0 z-40 bg-black bg-opacity-30 hidden md:hidden"
+  :class="{ '!block': document?.body?.classList.contains('show-filters') }"
+  @click.self="removeBodyClass('show-filters')"
+></div>
+  
 </template>
 
 <style scoped lang="postcss">
