@@ -40,60 +40,60 @@ useHead({
 </script>
 
 <template>
-  <div class="container">
-    <div class="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-16 mt-8">
-      <!-- ✅ Sidebar (desktop only) -->
-      <aside class="hidden md:block order-2 md:order-1 space-y-6">
-        <Filters v-if="storeSettings.showFilters" :hide-categories="false" />
-      </aside>
+  <div class="container flex flex-col md:flex-row gap-16 mt-8">
+    <!-- 🧭 Filters -->
+    <!-- ✅ Desktop sidebar + mobiele modal (Woonuxt regelt dit automatisch) -->
+    <Filters
+      v-if="storeSettings.showFilters"
+      :hide-categories="false"
+      class="md:w-[280px] w-full md:static"
+    />
 
-      <!-- 🛒 Main content -->
-      <section class="order-1 md:order-2 w-full">
-        <!-- Breadcrumb -->
-        <nav class="text-sm text-gray-500 mb-2">
-          <NuxtLink to="/" class="hover:underline">Home</NuxtLink>
-          <span class="mx-2">/</span>
-          <NuxtLink
-            to="/product-category/dames/"
-            class="hover:underline"
-          >
-            Dames
-          </NuxtLink>
-          <span class="mx-2">/</span>
-          <span class="text-gray-700 font-medium">{{ category?.name }}</span>
-        </nav>
+    <!-- 🛒 Main content -->
+    <div class="flex-1 w-full">
+      <!-- Breadcrumb -->
+      <nav class="text-sm text-gray-500 mb-2">
+        <NuxtLink to="/" class="hover:underline">Home</NuxtLink>
+        <span class="mx-2">/</span>
+        <NuxtLink
+          to="/product-category/dames/"
+          class="hover:underline"
+        >
+          Dames
+        </NuxtLink>
+        <span class="mx-2">/</span>
+        <span class="text-gray-700 font-medium">{{ category?.name }}</span>
+      </nav>
 
-        <!-- Titel -->
-        <h1 class="text-2xl font-semibold text-gray-900 mb-2">
-          {{ category?.name }}
-        </h1>
+      <!-- Titel -->
+      <h1 class="text-2xl font-semibold text-gray-900 mb-2">
+        {{ category?.name }}
+      </h1>
 
-        <!-- Beschrijving -->
-        <div
-          class="text-sm text-gray-700 leading-relaxed mb-6"
-          v-html="category?.description"
+      <!-- Beschrijving -->
+      <div
+        class="text-sm text-gray-700 leading-relaxed mb-6"
+        v-html="category?.description"
+      />
+
+      <!-- Controls -->
+      <div class="flex items-center justify-between w-full gap-4 mb-6 md:gap-8">
+        <ProductResultCount />
+
+        <OrderByDropdown
+          v-if="storeSettings.showOrderByDropdown"
+          class="hidden md:inline-flex"
         />
 
-        <!-- Controls -->
-        <div class="flex items-center justify-between w-full gap-4 mb-6 md:gap-8">
-          <ProductResultCount />
+        <!-- 📱 Mobiele filter trigger -->
+        <ShowFilterTrigger
+          v-if="storeSettings.showFilters"
+          class="md:hidden"
+        />
+      </div>
 
-          <!-- Sorteeropties -->
-          <OrderByDropdown
-            v-if="storeSettings.showOrderByDropdown"
-            class="hidden md:inline-flex"
-          />
-
-          <!-- 📱 Mobiele filter trigger -->
-          <ShowFilterTrigger
-            v-if="storeSettings.showFilters"
-            class="md:hidden"
-          />
-        </div>
-
-        <!-- Productgrid -->
-        <ProductGrid />
-      </section>
+      <!-- Productgrid -->
+      <ProductGrid />
     </div>
   </div>
 </template>
