@@ -17,6 +17,7 @@ setProducts(productsInCategory)
 onMounted(() => {
   if (!isQueryEmpty.value) updateProductList()
 })
+
 watch(
   () => route.query,
   () => {
@@ -42,11 +43,11 @@ useHead({
 <template>
   <div class="container flex flex-col md:flex-row gap-16 mt-8">
     <!-- 🧭 Filters -->
-    <!-- ✅ Desktop sidebar + mobiele modal (Woonuxt regelt dit automatisch) -->
+    <!-- ✅ Sidebar (desktop) + modal (mobiel) automatisch via Woonuxt -->
     <Filters
       v-if="storeSettings.showFilters"
       :hide-categories="false"
-      class="md:w-[280px] w-full md:static"
+      class="md:w-[280px] w-full"
     />
 
     <!-- 🛒 Main content -->
@@ -56,12 +57,13 @@ useHead({
         <NuxtLink to="/" class="hover:underline">Home</NuxtLink>
         <span class="mx-2">/</span>
         <NuxtLink
-          to="/product-category/dames/"
+          v-if="category?.parent?.node?.slug"
+          :to="`/product-category/${category.parent.node.slug}`"
           class="hover:underline"
         >
-          Dames
+          {{ category.parent.node.name }}
         </NuxtLink>
-        <span class="mx-2">/</span>
+        <span class="mx-2" v-if="category?.parent?.node?.slug">/</span>
         <span class="text-gray-700 font-medium">{{ category?.name }}</span>
       </nav>
 
@@ -80,6 +82,7 @@ useHead({
       <div class="flex items-center justify-between w-full gap-4 mb-6 md:gap-8">
         <ProductResultCount />
 
+        <!-- Sorteeropties -->
         <OrderByDropdown
           v-if="storeSettings.showOrderByDropdown"
           class="hidden md:inline-flex"
