@@ -66,11 +66,16 @@ function goBack() {
 }
 
 function close() {
+  let closing = false
+  if (closing) return
+  closing = true
   isOpen.value = false
   layer.value = 0
   sel0.value = null
   sel1.value = null
+  setTimeout(() => closing = false, 300) // wacht tot transition klaar is
 }
+
 
 async function go(url: string) {
   close()
