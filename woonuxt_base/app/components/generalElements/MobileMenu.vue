@@ -13,15 +13,12 @@ const isOpen = computed({
   set: (v: boolean) => emit('update:open', v)
 })
 
-// ❌ cleanUri kan weg, je gebruikt /product-category/ direct
-// function cleanUri (...) { ... }  <-- VERWIJDER DIT HELE BLOK
-
 // body scroll lock
 watch(isOpen, (v) => {
   if (process.client) document.documentElement.style.overflow = v ? 'hidden' : ''
 })
 
-// layered state ...
+// --- layered state ---
 type Layer0Item = { label: string; uri: string; columns: Layer1Item[] }
 type Layer1Item = { title: string; uri: string; items: Layer2Item[] }
 type Layer2Item = { label: string; uri: string }
@@ -30,6 +27,7 @@ const layer = ref<0 | 1 | 2>(0)
 const sel0 = ref<Layer0Item | null>(null)
 const sel1 = ref<Layer1Item | null>(null)
 
+// map menu data
 const layer0 = computed<Layer0Item[]>(() =>
   (topMenu.value || []).map(i => ({
     label: i.label,
@@ -37,20 +35,32 @@ const layer0 = computed<Layer0Item[]>(() =>
     columns: (i.columns || []).map(c => ({
       title: c.title,
       uri: c.uri,
-      items: (c.items || []).map(s => ({ label: s.label, uri: s.uri }))
+      items: (c.items || []).map(s => ({
+        label: s.label,
+        uri: s.uri
+      }))
     }))
   }))
 )
 
-function openLayer1(item: Layer0Item) { sel0.value = item; sel1.value = null; layer.value = 1 }
-function openLayer2(col: Layer1Item) { sel1.value = col; layer.value = 2 }
+function openLayer1(item: Layer0Item) {
+  sel0.value = item
+  sel1.value = null
+  layer.value = 1
+}
+
+function openLayer2(col: Layer1Item) {
+  sel1.value = col
+  layer.value = 2
+}
+
 function goBack() {
   if (layer.value === 2) { layer.value = 1; sel1.value = null; return }
   if (layer.value === 1) { layer.value = 0; sel0.value = null; return }
   close()
 }
 
-// ✅ guard MOET buiten de functie staan
+// prevent double close
 let closing = false
 
 function close() {
@@ -60,36 +70,30 @@ function close() {
   layer.value = 0
   sel0.value = null
   sel1.value = null
-  // laat de transition afronden (250ms in je CSS, 300ms is veilig)
   setTimeout(() => { closing = false }, 300)
 }
 
+// ✅ always go to /product-category/<slug>
 async function go(url: string) {
-  // sluit eerst netjes (triggert overlay fade-out)
   close()
-  // navigeer direct naar de meegegeven URL
-  await navigateTo(url)
+  // pak alleen de laatste slug uit de uri
+  const slug = url.split('/').filter(Boolean).pop() || ''
+  await navigateTo(`/product-category/${slug}/`)
 }
 </script>
 
-
-
 <template>
+  <!-- geen overlay meer -->
 
-  <!-- overlay -->
-<div v-if="isOpen" class="fixed inset-0 bg-black/40 z-30" @click="close" />
-
-<!-- drawer -->
-<Transition name="slide-left">
-  <aside
-    v-if="isOpen"
-    class="fixed top-0 left-0 h-full w-[80%] max-w-sm bg-white z-40 shadow-xl flex flex-col"
+  <Transition name="slide-left">
+    <aside
+      v-if="isOpen"
+      class="fixed top-0 left-0 h-full w-[80%] max-w-sm bg-white z-40 shadow-xl flex flex-col"
       role="dialog" aria-modal="true" aria-label="Hoofdmenu"
     >
       <!-- header -->
       <div class="h-14 flex items-center gap-2 px-4 border-b border-gray-100">
         <button v-if="layer>0" @click="goBack" class="p-2 text-gray-600 hover:text-gray-900" aria-label="Terug">
-          <!-- ArrowLeft -->
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M15 18l-6-6 6-6"/>
           </svg>
@@ -106,12 +110,10 @@ async function go(url: string) {
         <Transition name="slide-left" mode="out-in">
           <ul v-if="layer===0" key="l0" class="absolute inset-0 overflow-y-auto divide-y divide-gray-100">
             <li v-for="(item, i) in layer0" :key="`l0-${i}`" class="flex items-center">
-              <!-- label = naar laag 1 -->
               <button class="flex-1 text-left px-4 py-3 text-gray-800 font-medium"
                       @click="openLayer1(item)">
                 {{ item.label }}
               </button>
-              <!-- chevron = direct naar /dames etc. -->
               <button class="px-4 py-3 text-gray-500 hover:text-gray-800"
                       :aria-label="`Ga naar ${item.label}`"
                       @click="go(item.uri)">
@@ -127,12 +129,10 @@ async function go(url: string) {
         <Transition name="slide-left" mode="out-in">
           <ul v-if="layer===1 && sel0" key="l1" class="absolute inset-0 overflow-y-auto divide-y divide-gray-100">
             <li v-for="(col, i) in sel0.columns" :key="`l1-${i}`" class="flex items-center">
-              <!-- label = naar laag 2 -->
               <button class="flex-1 text-left px-4 py-3 text-gray-800 font-medium"
                       @click="openLayer2(col)">
                 {{ col.title }}
               </button>
-              <!-- chevron = direct naar /kleding etc. -->
               <button class="px-4 py-3 text-gray-500 hover:text-gray-800"
                       :aria-label="`Ga naar ${col.title}`"
                       @click="go(col.uri)">
@@ -148,7 +148,6 @@ async function go(url: string) {
         <Transition name="slide-left" mode="out-in">
           <ul v-if="layer===2 && sel1" key="l2" class="absolute inset-0 overflow-y-auto divide-y divide-gray-100">
             <li v-for="(sub, i) in sel1.items" :key="`l2-${i}`">
-              <!-- laatste laag: géén chevron, klik = navigate -->
               <button class="w-full text-left px-4 py-3 text-gray-700 hover:text-gray-900"
                       @click="go(sub.uri)">
                 {{ sub.label }}
