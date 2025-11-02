@@ -1,12 +1,16 @@
 <script setup lang="ts">
-const { isShowingSearch } = useSearching();
+const { isShowingSearch } = useSearching()
+
+// ✅ Voeg lokale menu state toe
+const isMenuOpen = ref(false)
 </script>
 
 <template>
   <header class="sticky top-0 z-40 bg-white shadow-sm shadow-light-500">
     <div class="container flex items-center justify-between py-4">
       <div class="flex items-center">
-        <MenuTrigger class="lg:hidden" />
+        <!-- ✅ Geef toggle door via v-model -->
+        <MenuTrigger class="lg:hidden" @click="isMenuOpen = !isMenuOpen" />
         <Logo class="md:w-[160px]" />
       </div>
       <MainMenu class="items-center hidden gap-6 text-sm text-gray-500 lg:flex lg:px-4" />
@@ -19,10 +23,14 @@ const { isShowingSearch } = useSearching();
         </div>
       </div>
     </div>
+
     <Transition name="scale-y" mode="out-in">
       <div class="container mb-3 -mt-1 sm:hidden" v-if="isShowingSearch">
         <ProductSearch class="flex w-full" />
       </div>
     </Transition>
+
+    <!-- ✅ Plaats MobileMenu buiten de container -->
+    <MobileMenu v-model:open="isMenuOpen" />
   </header>
 </template>
