@@ -1,23 +1,19 @@
 <script setup lang="ts">
 import type { Product } from '~/types/product'
 
-// 🧩 Imports uit composables
 const { setProducts, updateProductList } = useProducts()
 const { isQueryEmpty } = useHelpers()
 const { storeSettings } = useAppConfig()
 const route = useRoute()
 const slug = route.params.slug
 
-// 🧠 Producten en categorie ophalen via GraphQL
+// 🧩 Haal producten en categorie op
 const { data } = await useAsyncGql('getProducts', { slug })
-
 const productsInCategory = (data.value?.products?.nodes || []) as Product[]
 const category = data.value?.productCategories?.nodes?.[0]
 
-// 🧩 Vul de globale product store
 setProducts(productsInCategory)
 
-// 🚀 Herladen bij query wijzigingen
 onMounted(() => {
   if (!isQueryEmpty.value) updateProductList()
 })
@@ -30,7 +26,6 @@ watch(
   },
 )
 
-// 🧭 SEO meta
 useHead({
   title: category?.name || 'Categorie',
   meta: [
@@ -47,26 +42,18 @@ useHead({
 <template>
   <div class="container">
     <div class="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-16 mt-8">
-      <!-- ✅ Sidebar alleen op desktop -->
+      <!-- ✅ Sidebar alleen zichtbaar op desktop -->
       <aside class="hidden md:block order-2 md:order-1 space-y-6">
-        <Filters
-          v-if="storeSettings.showFilters"
-          :hide-categories="false"
-        />
+        <Filters v-if="storeSettings.showFilters" :hide-categories="false" />
       </aside>
 
-      <!-- 🛒 Hoofdcontent -->
+      <!-- 🛒 Main Content -->
       <section class="order-1 md:order-2 w-full">
         <!-- Breadcrumb -->
         <nav class="text-sm text-gray-500 mb-2">
           <NuxtLink to="/" class="hover:underline">Home</NuxtLink>
           <span class="mx-2">/</span>
-          <NuxtLink
-            to="/product-category/dames/"
-            class="hover:underline"
-          >
-            Dames
-          </NuxtLink>
+          <NuxtLink to="/product-category/dames/" class="hover:underline">Dames</NuxtLink>
           <span class="mx-2">/</span>
           <span class="text-gray-700 font-medium">{{ category?.name }}</span>
         </nav>
@@ -82,7 +69,7 @@ useHead({
           v-html="category?.description"
         />
 
-        <!-- 🔹 Controls -->
+        <!-- Controls -->
         <div class="flex items-center justify-between w-full gap-4 mb-6 md:gap-8">
           <ProductResultCount />
           <OrderByDropdown
@@ -96,15 +83,17 @@ useHead({
           />
         </div>
 
-        <!-- 🧩 Product grid -->
+        <!-- Grid -->
         <ProductGrid />
       </section>
     </div>
 
-    <!-- 📱 Mobiele overlay -->
-    <FiltersDrawer
+    <!-- 📱 Filters overlay (mobiel) -->
+    <Filters
       v-if="storeSettings.showFilters"
-      class="md:hidden"
+      :hide-categories="false"
+      class="fixed inset-0 z-[9999] bg-white overflow-y-auto p-6 md:hidden transition-transform duration-300"
+      :class="{ 'translate-y-0': document?.body?.classList.contains('show-filters'), 'translate-y-full': !document?.body?.classList.contains('show-filters') }"
     />
   </div>
 </template>
