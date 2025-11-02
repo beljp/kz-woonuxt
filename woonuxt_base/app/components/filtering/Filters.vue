@@ -11,7 +11,6 @@ const route = useRoute()
 const { hideCategories } = defineProps({
   hideCategories: { type: Boolean, default: false },
 })
-
 const currentSlug = (route.params.categorySlug || route.params.slug) as string
 
 // 🧩 Attributenfilters
@@ -25,25 +24,18 @@ const taxonomies = globalProductAttributes.map((attr) =>
 const { data: currentCategoryData } = await useAsyncGql('getCategoryTreeBySlug', { slug: currentSlug })
 const currentCategory = computed(() => currentCategoryData.value?.productCategory)
 
-// 🪜 Toon het niveau van de bovenliggende categorie als we op een subcategorie zitten
+// 🔁 Parent ophalen (voor siblings)
 let categoryData
-
-if (
-  currentCategory.value?.parent?.node?.slug &&
-  (!currentCategory.value?.children?.nodes?.length ||
-    currentCategory.value?.children?.nodes?.length === 0)
-) {
-  // 🧭 De huidige categorie is een subcategorie zonder eigen subcategorieën → gebruik parentniveau
+if (currentCategory.value?.parent?.node?.slug) {
   const { data: parentData } = await useAsyncGql('getCategoryTreeBySlug', {
     slug: currentCategory.value.parent.node.slug,
   })
   categoryData = parentData
 } else {
-  // 🧭 Anders toon de huidige categorie
   categoryData = currentCategoryData
 }
 
-// ✅ Toon de parentcategorie met alle siblings
+// ✅ Toon altijd de parentcategorie met alle siblings
 const category = computed(() => categoryData.value?.productCategory)
 const siblings = computed(() => category.value?.children?.nodes || [])
 const parentCategory = computed(() => category.value?.parent?.node)
@@ -107,22 +99,21 @@ const openCategories = ref(true)
 
             <!-- 🌿 Boomstructuur -->
             <ul class="space-y-1">
+              <!-- Siblings op hetzelfde niveau -->
               <li v-for="sibling in siblings" :key="sibling.id">
                 <NuxtLink
                   :to="`/product-category/${sibling.slug}`"
                   class="block font-medium text-gray-700 hover:text-primary transition"
                   :class="{
-                    'font-semibold text-primary underline': sibling.slug === currentSlug ||
-                      sibling.slug === currentCategory.value?.parent?.node?.slug,
+                    'font-semibold text-primary underline': sibling.slug === currentSlug,
                   }"
                 >
                   {{ sibling.name }}
                 </NuxtLink>
 
-                <!-- ✅ Toon subcategorieën van de actieve categorie -->
+                <!-- Als dit de huidige categorie is, toon de subcategorieën -->
                 <ul
-                  v-if="sibling.slug === currentSlug ||
-                    sibling.slug === currentCategory.value?.parent?.node?.slug"
+                  v-if="sibling.slug === currentSlug && hasSubCategories"
                   class="space-y-1 mt-1 border-l border-gray-200 pl-3"
                 >
                   <li v-for="sub in subCategories" :key="sub.id">
