@@ -5,20 +5,24 @@ const { navigateToLogin } = useAuth()
 const route = useRoute()
 const { topMenu } = await useCategoryMenu()
 
-// overlay moet tegelijk aan/uit met hover
 const showOverlay = ref(false)
 
 const buildCategoryLink = (slug: string) => `/product-category/${slug}/`
 
 const onEnter = () => (showOverlay.value = true)
 const onLeave = () => (showOverlay.value = false)
+const closeMenu = () => (showOverlay.value = false)
 </script>
 
 <template>
   <div class="relative" @mouseenter="onEnter" @mouseleave="onLeave">
     <nav class="hidden lg:flex items-center space-x-8 relative z-50">
       <!-- Statische links -->
-      <NuxtLink to="/" class="hover:text-primary tracking-wide transition-colors">
+      <NuxtLink
+        to="/"
+        class="hover:text-primary tracking-wide transition-colors"
+        @click="closeMenu"
+      >
         {{ $t('general.home') }}
       </NuxtLink>
 
@@ -32,6 +36,7 @@ const onLeave = () => (showOverlay.value = false)
         <NuxtLink
           :to="buildCategoryLink(item.label.toLowerCase())"
           class="font-semibold text-gray-900 hover:text-primary tracking-wide transition-colors hover:underline underline-offset-4"
+          @click="closeMenu"
         >
           {{ item.label }}
         </NuxtLink>
@@ -50,6 +55,7 @@ const onLeave = () => (showOverlay.value = false)
               <NuxtLink
                 :to="buildCategoryLink(column.title.toLowerCase().replaceAll(' ', '-'))"
                 class="block font-semibold text-gray-900 hover:text-primary mb-2 transition-colors"
+                @click="closeMenu"
               >
                 {{ column.title }}
               </NuxtLink>
@@ -62,6 +68,7 @@ const onLeave = () => (showOverlay.value = false)
                   <NuxtLink
                     :to="buildCategoryLink(link.label.toLowerCase().replaceAll(' ', '-'))"
                     class="block text-sm text-gray-600 hover:text-primary transition-colors"
+                    @click="closeMenu"
                   >
                     {{ link.label }}
                   </NuxtLink>
@@ -73,7 +80,11 @@ const onLeave = () => (showOverlay.value = false)
       </div>
 
       <!-- Contact -->
-      <NuxtLink to="/contact" class="hover:text-primary tracking-wide transition-colors">
+      <NuxtLink
+        to="/contact"
+        class="hover:text-primary tracking-wide transition-colors"
+        @click="closeMenu"
+      >
         {{ $t('general.contact') }}
       </NuxtLink>
 
@@ -81,20 +92,23 @@ const onLeave = () => (showOverlay.value = false)
       <NuxtLink
         class="lg:hidden"
         to="/my-account"
-        @click="navigateToLogin(route.fullPath)"
+        @click="
+          navigateToLogin(route.fullPath);
+          closeMenu();
+        "
         :prefetch="false"
       >
         My Account
       </NuxtLink>
     </nav>
 
-    <!-- ⬇️ overlay: gebruik hier exact dezelfde markup/component als je cart-overlay -->
+    <!-- Overlay -->
     <transition name="fade">
       <div
         v-if="showOverlay"
         class="absolute inset-x-0 top-full bottom-0 z-40"
       >
-        <!-- vervang de div hieronder door jouw bestaande overlay-div uit de cart -->
+        <!-- Gebruik hier jouw bestaande overlay (zoals cart-overlay) -->
         <div class="w-full h-full overlay"></div>
       </div>
     </transition>
