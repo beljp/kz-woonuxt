@@ -1,29 +1,24 @@
 <script setup lang="ts">
 import { useCategoryMenu } from '~/composables/useCategoryMenu'
 
-const { wishlistLink, navigateToLogin } = useAuth()
+const { navigateToLogin } = useAuth()
 const route = useRoute()
 const { topMenu } = await useCategoryMenu()
 
-// Boolean om hover-state bij te houden (voor overlay synchronisatie)
+// overlay moet tegelijk aan/uit met hover
 const showOverlay = ref(false)
+
+const buildCategoryLink = (slug: string) => `/product-category/${slug}/`
 
 const onEnter = () => (showOverlay.value = true)
 const onLeave = () => (showOverlay.value = false)
 </script>
 
 <template>
-  <div class="relative">
-    <nav
-      class="hidden lg:flex items-center space-x-8 relative z-50"
-      @mouseenter="onEnter"
-      @mouseleave="onLeave"
-    >
+  <div class="relative" @mouseenter="onEnter" @mouseleave="onLeave">
+    <nav class="hidden lg:flex items-center space-x-8 relative z-50">
       <!-- Statische links -->
-      <NuxtLink
-        to="/"
-        class="hover:text-primary tracking-wide transition-colors"
-      >
+      <NuxtLink to="/" class="hover:text-primary tracking-wide transition-colors">
         {{ $t('general.home') }}
       </NuxtLink>
 
@@ -33,36 +28,39 @@ const onLeave = () => (showOverlay.value = false)
         :key="item.id"
         class="relative group/menu"
       >
+        <!-- top-level -->
         <NuxtLink
-          :to="item.uri"
+          :to="buildCategoryLink(item.label.toLowerCase())"
           class="font-semibold text-gray-900 hover:text-primary tracking-wide transition-colors hover:underline underline-offset-4"
         >
           {{ item.label }}
         </NuxtLink>
 
-        <!-- Dropdown (megamenu) -->
+        <!-- dropdown -->
         <div
           class="absolute left-0 top-full translate-y-3 bg-white border border-gray-100 shadow-2xl rounded-3xl opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-200 ease-out z-50"
         >
-          <div
-            class="grid grid-cols-3 gap-10 min-w-[800px] bg-gray-50 rounded-2xl p-6 shadow-inner"
-          >
+          <div class="grid grid-cols-3 gap-10 min-w-[800px] bg-gray-50 rounded-2xl p-6 shadow-inner">
             <div
               v-for="column in item.columns"
               :key="column.title"
               class="min-w-[180px]"
             >
+              <!-- kolomtitel -->
               <NuxtLink
-                :to="column.uri"
+                :to="buildCategoryLink(column.title.toLowerCase().replaceAll(' ', '-'))"
                 class="block font-semibold text-gray-900 hover:text-primary mb-2 transition-colors"
               >
                 {{ column.title }}
               </NuxtLink>
 
               <ul class="space-y-1">
-                <li v-for="link in column.items" :key="link.uri">
+                <li
+                  v-for="link in column.items"
+                  :key="link.uri"
+                >
                   <NuxtLink
-                    :to="link.uri"
+                    :to="buildCategoryLink(link.label.toLowerCase().replaceAll(' ', '-'))"
                     class="block text-sm text-gray-600 hover:text-primary transition-colors"
                   >
                     {{ link.label }}
@@ -74,15 +72,12 @@ const onLeave = () => (showOverlay.value = false)
         </div>
       </div>
 
-      <!-- Overige links -->
-      <NuxtLink
-        to="/contact"
-        class="hover:text-primary tracking-wide transition-colors"
-      >
+      <!-- Contact -->
+      <NuxtLink to="/contact" class="hover:text-primary tracking-wide transition-colors">
         {{ $t('general.contact') }}
       </NuxtLink>
 
-      <!-- Mobiele fallback login -->
+      <!-- mobile fallback -->
       <NuxtLink
         class="lg:hidden"
         to="/my-account"
@@ -93,26 +88,26 @@ const onLeave = () => (showOverlay.value = false)
       </NuxtLink>
     </nav>
 
-    <!-- Overlay: alleen tonen als menu open is -->
+    <!-- ⬇️ overlay: gebruik hier exact dezelfde markup/component als je cart-overlay -->
     <transition name="fade">
       <div
         v-if="showOverlay"
-        class="app-overlay absolute left-0 right-0 top-full"
-      ></div>
+        class="absolute inset-x-0 top-full bottom-0 z-40"
+      >
+        <!-- vervang de div hieronder door jouw bestaande overlay-div uit de cart -->
+        <div class="w-full h-full overlay"></div>
+      </div>
     </transition>
   </div>
 </template>
 
 <style scoped>
-/* Safari/iOS hover fallback */
 .group\/menu:hover > div {
   display: block;
 }
-
-/* Fade transition for overlay */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.25s ease;
+  transition: opacity 0.2s ease;
 }
 .fade-enter-from,
 .fade-leave-to {
