@@ -3,6 +3,7 @@ query getProducts(
   $slug: [String]
   $first: Int = 9999
   $orderby: ProductsOrderByEnum = DATE
+  $onSale: Boolean
 ) {
   products(
     first: $first
@@ -13,6 +14,7 @@ query getProducts(
       minPrice: 0
       orderby: { field: $orderby, order: DESC }
       status: "publish"
+      onSale: $onSale
     }
   ) {
     pageInfo {
@@ -27,6 +29,7 @@ query getProducts(
       id
       averageRating
       reviewCount
+      onSale
       ...Terms
       ...ProductCategories
       ...SimpleProduct
@@ -42,8 +45,6 @@ query getProducts(
       description
       slug
       uri
-
-      # 🔹 Nieuw: haal volledige ancestor chain op
       ancestors {
         nodes {
           id
@@ -51,8 +52,6 @@ query getProducts(
           slug
         }
       }
-
-      # Huidige directe parent (optioneel behouden)
       parent {
         node {
           id
