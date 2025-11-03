@@ -4,12 +4,21 @@ import { useCategoryMenu } from '~/composables/useCategoryMenu'
 const { wishlistLink, navigateToLogin } = useAuth()
 const route = useRoute()
 const { topMenu } = await useCategoryMenu()
+
+// Boolean om hover-state bij te houden (voor overlay synchronisatie)
+const showOverlay = ref(false)
+
+const onEnter = () => (showOverlay.value = true)
+const onLeave = () => (showOverlay.value = false)
 </script>
 
 <template>
-  <!-- Wrapper zodat overlay en hover samen werken -->
-  <div class="relative group">
-    <nav class="hidden lg:flex items-center space-x-8 relative z-50">
+  <div class="relative">
+    <nav
+      class="hidden lg:flex items-center space-x-8 relative z-50"
+      @mouseenter="onEnter"
+      @mouseleave="onLeave"
+    >
       <!-- Statische links -->
       <NuxtLink
         to="/"
@@ -24,7 +33,6 @@ const { topMenu } = await useCategoryMenu()
         :key="item.id"
         class="relative group/menu"
       >
-        <!-- Top-level categorie -->
         <NuxtLink
           :to="item.uri"
           class="font-semibold text-gray-900 hover:text-primary tracking-wide transition-colors hover:underline underline-offset-4"
@@ -34,12 +42,11 @@ const { topMenu } = await useCategoryMenu()
 
         <!-- Dropdown (megamenu) -->
         <div
-          class="absolute left-0 top-full translate-y-3 bg-white border border-gray-100 shadow-2xl rounded-3xl opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-300 ease-out z-50"
+          class="absolute left-0 top-full translate-y-3 bg-white border border-gray-100 shadow-2xl rounded-3xl opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-200 ease-out z-50"
         >
           <div
-            class="grid auto-cols-fr gap-8 min-w-[700px] bg-gray-50 rounded-2xl p-6 shadow-inner"
+            class="grid grid-cols-3 gap-10 min-w-[800px] bg-gray-50 rounded-2xl p-6 shadow-inner"
           >
-            <!-- Kolommen -->
             <div
               v-for="column in item.columns"
               :key="column.title"
@@ -86,16 +93,29 @@ const { topMenu } = await useCategoryMenu()
       </NuxtLink>
     </nav>
 
-    <!-- Overlay -->
-    <div
-      class="fixed inset-0 bg-black/10 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 group-hover:opacity-100 group-hover:pointer-events-auto"
-    ></div>
+    <!-- Overlay: alleen tonen als menu open is -->
+    <transition name="fade">
+      <div
+        v-if="showOverlay"
+        class="app-overlay absolute left-0 right-0 top-full"
+      ></div>
+    </transition>
   </div>
 </template>
 
 <style scoped>
-/* Safari / iOS hover fallback */
+/* Safari/iOS hover fallback */
 .group\/menu:hover > div {
   display: block;
+}
+
+/* Fade transition for overlay */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
