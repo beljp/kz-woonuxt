@@ -4,19 +4,22 @@ export type CategoryNode = {
   databaseId: number
   parentDatabaseId?: number
   name: string
+  slug: string
   uri: string
   children?: { nodes: CategoryNode[] }
 }
 
 export type MenuColumn = {
   title: string
+  slug: string
   uri: string
-  items: { label: string; uri: string }[]
+  items: { label: string; slug: string; uri: string }[]
 }
 
 export type MenuItem = {
   id: number
   label: string
+  slug: string
   uri: string
   columns: MenuColumn[]
 }
@@ -35,18 +38,21 @@ export async function useCategoryMenu() {
   const toMenuItem = (node: CategoryNode): MenuItem => {
     const columns: MenuColumn[] = (node.children?.nodes ?? []).map((lvl1) => ({
       title: lvl1.name,
+      slug: lvl1.slug,
       uri: lvl1.uri,
       items: (lvl1.children?.nodes ?? []).map((lvl2) => ({
         label: lvl2.name,
-        uri: lvl2.uri
-      }))
+        slug: lvl2.slug,
+        uri: lvl2.uri,
+      })),
     }))
 
     return {
       id: node.databaseId,
       label: node.name,
+      slug: node.slug,
       uri: node.uri,
-      columns
+      columns,
     }
   }
 
