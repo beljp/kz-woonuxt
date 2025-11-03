@@ -35,24 +35,24 @@ const productsToShow = computed(() =>
 
 <style lang="postcss" scoped>
 .product-grid {
-  @apply my-4 min-h-[600px] grid transition-all gap-8 lg:my-8;
+  @apply my-4 min-h-[600px] grid transition-all gap-6 lg:my-8;
 
-  /* 📱 Mobiel: van 2 → 3 */
-  grid-template-columns: repeat(3, 1fr);
+  /* 📱 Mobiel: 2 producten */
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .product-grid:empty {
   display: none;
 }
 
-/* 💻 Tablet: van 3 → 4 */
+/* 💻 Tablet: 4 producten */
 @media (min-width: 768px) {
   .product-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-/* 🖥️ Desktop: van 4 → 5 */
+/* 🖥️ Desktop: 5 producten */
 @media (min-width: 1024px) {
   .product-grid {
     grid-template-columns: repeat(5, 1fr);
