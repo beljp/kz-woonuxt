@@ -7,82 +7,95 @@ const { topMenu } = await useCategoryMenu()
 </script>
 
 <template>
-  <nav class="hidden lg:flex items-center space-x-6">
-    <!-- Statische links -->
-    <NuxtLink to="/" class="hover:text-primary transition-colors">
-      {{ $t('general.home') }}
-    </NuxtLink>
-
-    <!-- Dynamisch megamenu -->
-    <div
-      v-for="item in topMenu"
-      :key="item.id"
-      class="relative group"
-    >
-      <!-- Top-level categorie -->
+  <!-- Wrapper zodat overlay en hover samen werken -->
+  <div class="relative group">
+    <nav class="hidden lg:flex items-center space-x-8 relative z-50">
+      <!-- Statische links -->
       <NuxtLink
-        :to="item.uri"
-        class="font-semibold text-gray-800 hover:text-primary transition-colors"
+        to="/"
+        class="hover:text-primary tracking-wide transition-colors"
       >
-        {{ item.label }}
+        {{ $t('general.home') }}
       </NuxtLink>
 
-      <!-- Dropdown (megamenu) -->
+      <!-- Dynamisch megamenu -->
       <div
-        class="absolute left-0 top-full bg-white border border-gray-100 shadow-2xl rounded-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+        v-for="item in topMenu"
+        :key="item.id"
+        class="relative group/menu"
       >
-        <div class="grid grid-cols-3 gap-8 min-w-[700px] bg-gray-50 rounded-xl p-6">
-          <!-- Kolommen -->
-          <div
-            v-for="column in item.columns"
-            :key="column.title"
-            class="min-w-[180px]"
-          >
-            <NuxtLink
-              :to="column.uri"
-              class="block font-semibold text-gray-900 hover:text-primary mb-2 transition-colors"
-            >
-              {{ column.title }}
-            </NuxtLink>
+        <!-- Top-level categorie -->
+        <NuxtLink
+          :to="item.uri"
+          class="font-semibold text-gray-900 hover:text-primary tracking-wide transition-colors hover:underline underline-offset-4"
+        >
+          {{ item.label }}
+        </NuxtLink>
 
-            <ul class="space-y-1">
-              <li v-for="link in column.items" :key="link.uri">
-                <NuxtLink
-                  :to="link.uri"
-                  class="block text-sm text-gray-600 hover:text-primary transition-colors"
-                >
-                  {{ link.label }}
-                </NuxtLink>
-              </li>
-            </ul>
+        <!-- Dropdown (megamenu) -->
+        <div
+          class="absolute left-0 top-full translate-y-3 bg-white border border-gray-100 shadow-2xl rounded-3xl opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-300 ease-out z-50"
+        >
+          <div
+            class="grid auto-cols-fr gap-8 min-w-[700px] bg-gray-50 rounded-2xl p-6 shadow-inner"
+          >
+            <!-- Kolommen -->
+            <div
+              v-for="column in item.columns"
+              :key="column.title"
+              class="min-w-[180px]"
+            >
+              <NuxtLink
+                :to="column.uri"
+                class="block font-semibold text-gray-900 hover:text-primary mb-2 transition-colors"
+              >
+                {{ column.title }}
+              </NuxtLink>
+
+              <ul class="space-y-1">
+                <li v-for="link in column.items" :key="link.uri">
+                  <NuxtLink
+                    :to="link.uri"
+                    class="block text-sm text-gray-600 hover:text-primary transition-colors"
+                  >
+                    {{ link.label }}
+                  </NuxtLink>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Overige links -->
-    <NuxtLink
-      to="/contact"
-      class="hover:text-primary transition-colors"
-    >
-      {{ $t('general.contact') }}
-    </NuxtLink>
+      <!-- Overige links -->
+      <NuxtLink
+        to="/contact"
+        class="hover:text-primary tracking-wide transition-colors"
+      >
+        {{ $t('general.contact') }}
+      </NuxtLink>
 
-    <!-- Mobiele fallback login -->
-    <NuxtLink
-      class="lg:hidden"
-      to="/my-account/"
-      @click="navigateToLogin(route.fullPath)"
-      :prefetch="false"
-    >
-      My Account
-    </NuxtLink>
-  </nav>
+      <!-- Mobiele fallback login -->
+      <NuxtLink
+        class="lg:hidden"
+        to="/my-account"
+        @click="navigateToLogin(route.fullPath)"
+        :prefetch="false"
+      >
+        My Account
+      </NuxtLink>
+    </nav>
+
+    <!-- Overlay -->
+    <div
+      class="fixed inset-0 bg-black/10 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 group-hover:opacity-100 group-hover:pointer-events-auto"
+    ></div>
+  </div>
 </template>
 
 <style scoped>
-/* Hover fallback voor Safari/iOS */
-.group:hover > div {
+/* Safari / iOS hover fallback */
+.group\/menu:hover > div {
   display: block;
 }
 </style>
