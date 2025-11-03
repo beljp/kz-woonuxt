@@ -64,7 +64,7 @@ const openCategories = ref(true)
   <!-- 📱 Mobiele + desktop filters -->
   <aside
     id="filters"
-    class="fixed md:static top-0 left-0 h-full md:h-auto bg-white md:bg-transparent z-50 md:z-auto w-[85%] md:w-[280px] overflow-y-auto transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 show-filters:translate-x-0 shadow-xl md:shadow-none"
+    class="fixed md:static top-0 left-0 h-full md:h-auto bg-white md:bg-transparent z-50 md:z-auto w-[85%] md:w-[320px] overflow-y-auto transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 show-filters:translate-x-0 shadow-xl md:shadow-none"
   >
 
     <!-- 🧭 Header (mobiel zichtbaar) -->
