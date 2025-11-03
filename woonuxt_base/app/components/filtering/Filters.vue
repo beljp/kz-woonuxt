@@ -82,7 +82,8 @@ const openCategories = ref(true)
     <!-- 📱 Sorteeroptie boven filters (alleen mobiel) -->
     <OrderByDropdown class="block w-full md:hidden p-4" />
 
-    <div class="relative grid mb-12 space-y-8 divide-y p-4 md:p-0">
+      <div class="relative grid mb-12 space-y-8 divide-y p-4 md:px-6 md:py-0">
+
       <!-- 📂 Categorieën -->
       <div v-if="!hideCategories && category" class="pt-4">
         <div
