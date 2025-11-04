@@ -1,5 +1,3 @@
-# ✅ Actieve Netlify-config voor Woonuxt met SSR en API routes
-
 [build]
   command = "npm run build"
   publish = ".output/public"
@@ -11,8 +9,3 @@
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
-
-# Optioneel: omgevingvariabelen die Woonuxt gebruikt
-[template.environment]
-  GQL_HOST = "https://wp.kledingzoeken.nl/graphql"
-  NUXT_IMAGE_DOMAINS = "wp.kledingzoeken.nl"
