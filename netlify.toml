@@ -3,11 +3,13 @@
   publish = ".netlify/functions-internal"
   functions = ".netlify/functions-internal"
 
+# 🔥 Stuurt alle API-verzoeken naar je server function
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  to = "/.netlify/functions/server"
   status = 200
 
+# 🔥 Stuurt al het overige verkeer naar Nuxt SSR server
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/server"
