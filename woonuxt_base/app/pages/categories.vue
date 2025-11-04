@@ -93,7 +93,7 @@ useHead({
             <!-- 🔗 NuxtLink aangepast met prefix -->
             <NuxtLink
               v-if="firstLevelSubs.find(cat => cat.databaseId === Number(parentId))?.slug"
-              :to="`/product-category/${decodeURIComponent(firstLevelSubs.find(cat => cat.databaseId === Number(parentId))?.slug || '')}/`"
+              :to="`/c/${decodeURIComponent(firstLevelSubs.find(cat => cat.databaseId === Number(parentId))?.slug || '')}/`"
               :title="`Bekijk alle ${firstLevelSubs.find(cat => cat.databaseId === Number(parentId))?.name?.toLowerCase()} in ${activeCategory?.name}`"
               class="text-sm text-gray-400 hover:text-gray-600 transition"
             >
@@ -110,7 +110,7 @@ useHead({
             <CategoryCard
               v-for="(subcategory, i) in subLevelCats"
               :key="subcategory.id"
-              :node="{ ...subcategory, uri: `/product-category/${subcategory.slug}/` }"
+              :node="{ ...subcategory, uri: `/c/${subcategory.slug}/` }"
               :image-loading="i <= 2 ? 'eager' : 'lazy'"
             />
           </div>
