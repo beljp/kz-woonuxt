@@ -69,6 +69,7 @@ hooks: {
 
 
   nitro: {
+    preset: 'netlify', // ✅ zorg dat API-routes als serverless functies werken
     routeRules: {
       '/checkout/order-received/**': { prerender: false },
       '/order-summary/**': { prerender: false },
