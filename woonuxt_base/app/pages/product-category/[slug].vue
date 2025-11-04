@@ -58,7 +58,7 @@ useHead({
         <span class="mx-2">/</span>
         <NuxtLink
           v-if="category?.parent?.node?.slug"
-          :to="`/product-category/${category.parent.node.slug}`"
+          :to="`/c/${category.parent.node.slug}`"
           class="hover:underline"
         >
           {{ category.parent.node.name }}
