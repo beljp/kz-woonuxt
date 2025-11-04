@@ -78,7 +78,7 @@ async function go(url: string) {
   close()
   // pak alleen de laatste slug uit de uri
   const slug = url.split('/').filter(Boolean).pop() || ''
-  await navigateTo(`/product-category/${slug}/`)
+  await navigateTo(`/c/${slug}/`)
 }
 </script>
 
