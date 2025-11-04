@@ -10,7 +10,7 @@ const APP_HOST = process.env.APP_HOST || 'http://localhost:3000'
 export default defineNuxtConfig({
   ssr: true, // ✅ belangrijk
   rootDir: resolve('.'),
-  modulesDir: [resolve('../node_modules')], // 👈 belangrijk voor jouw monorepo structuur
+  modulesDir: [resolve('../node_modules')], // 👈 belangrijk voor monorepo-structuur
 
   image: {
     provider: 'none',
@@ -37,7 +37,7 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxt/icon',
     '@nuxt/image',
-    '@nuxtjs/i18n'
+    '@nuxtjs/i18n',
   ],
 
   runtimeConfig: {
@@ -59,7 +59,7 @@ export default defineNuxtConfig({
 
   alias: {
     '#constants': resolve('./app/constants'),
-    '#woo': '../.nuxt/gql/default',
+    '#woo': resolve('./.nuxt/gql/default'), // ✅ correcte alias voor Netlify
   },
 
   hooks: {
@@ -86,7 +86,7 @@ export default defineNuxtConfig({
     },
   },
 
-  // i18n
+  // 🌍 i18n-configuratie
   i18n: {
     locales: [
       { code: 'en_US', file: 'en-US.json', name: 'English 🇺🇸' },
