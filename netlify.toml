@@ -1,6 +1,5 @@
 [build]
   command = "npm run build"
-  publish = "woonuxt_base/.output/public"
   functions = "woonuxt_base/.netlify/functions-internal"
 
 [[redirects]]
