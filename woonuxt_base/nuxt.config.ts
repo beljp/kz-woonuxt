@@ -10,7 +10,9 @@ const APP_HOST = process.env.APP_HOST || 'http://localhost:3000'
 export default defineNuxtConfig({
   ssr: true, // ✅ belangrijk
   rootDir: resolve('.'),
-  modulesDir: [resolve('../node_modules')], // 👈 belangrijk voor monorepo-structuur
+//  modulesDir: [resolve('../node_modules')], // 👈 belangrijk voor monorepo-structuur
+  modulesDir: [resolve('./node_modules'), resolve('../node_modules')],
+
 
   image: {
     provider: 'none',
