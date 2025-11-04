@@ -69,13 +69,15 @@ hooks: {
 
 
   nitro: {
-    preset: 'netlify', // ✅ zorg dat API-routes als serverless functies werken
-    routeRules: {
-      '/checkout/order-received/**': { prerender: false },
-      '/order-summary/**': { prerender: false },
-      '/api/**': { prerender: false }, // <— voeg dit toe!
-    },
+  preset: 'netlify',
+  srcDir: 'server',
+  routeRules: {
+    '/checkout/order-received/**': { prerender: false },
+    '/order-summary/**': { prerender: false },
+    '/api/**': { prerender: false },
   },
+},
+
 
   // Multilingual support
   // @ts-ignore - i18n types not recognized
