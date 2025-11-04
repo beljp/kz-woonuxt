@@ -65,27 +65,3 @@ fragment ProductAttribute on ProductAttribute {
     }
   }
 }
-
-# ✅ Alleen noodzakelijke toevoeging: onSale
-fragment ExternalProduct on ExternalProduct {
-  id
-  databaseId
-  name
-  slug
-  type
-  sku
-  price
-  regularPrice
-  salePrice
-  onSale         # <-- toegevoegd zodat Sale-filter werkt voor externe producten
-  externalUrl
-  image {
-    id
-    sourceUrl
-    altText
-    mediaDetails {
-      width
-      height
-    }
-  }
-}
