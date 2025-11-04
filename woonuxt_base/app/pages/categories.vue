@@ -2,7 +2,7 @@
 import CategoryCard from '~/components/CategoryCard.vue'
 
 // 💄 Gewenste volgorde van hoofdcategorieën
-const topCategoryIds = [34, 35, 36, 37, 38]
+const topCategoryIds = [163, 164, 165, 166, 167]
 
 // 🔹 Haal de hoofdcategorieën op in die volgorde
 const { data: parentData } = await useAsyncGql('getProductCategories', { include: topCategoryIds })
