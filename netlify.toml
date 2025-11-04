@@ -1,7 +1,13 @@
 [build]
-  command = "npm run build -- --cwd woonuxt_base"
-  publish = "woonuxt_base/.output/public"
-  functions = "woonuxt_base/.netlify/functions-internal"
+  base = ""                                  # build vanuit de root
+  command = "npm run build"                  # standaard build-script uit package.json
+  publish = "woonuxt_base/.output/public"    # waar je site wordt gepubliceerd
+  functions = "woonuxt_base/.netlify/functions-internal"  # waar serverless functions komen
+
+[build.environment]
+  NITRO_PRESET = "netlify"                   # vertel Nitro dat we op Netlify draaien
+  NUXT_CWD = "woonuxt_base"                  # vertel Nuxt dat de app in woonuxt_base staat
+  REVALIDATE_SECRET = "kz_refresh_2025"      # (optioneel) voor je /api/revalidate endpoint
 
 [[redirects]]
   from = "/api/*"
