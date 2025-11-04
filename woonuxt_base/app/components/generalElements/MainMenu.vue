@@ -12,6 +12,7 @@ const buildCategoryLink = (slug: string) => `/c/${slug}/`
 const onEnter = () => (showOverlay.value = true)
 const onLeave = () => (showOverlay.value = false)
 const closeMenu = () => (showOverlay.value = false)
+  console.log(menuItems.value)
 </script>
 
 <template>
