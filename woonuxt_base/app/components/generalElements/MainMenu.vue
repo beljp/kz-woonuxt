@@ -5,6 +5,9 @@ const { navigateToLogin } = useAuth()
 const route = useRoute()
 const { topMenu } = await useCategoryMenu()
 
+// 🔍 Debug: toon menu-data in de console
+console.log('🧭 topMenu data:', topMenu.value)
+
 const showOverlay = ref(false)
 
 const onEnter = () => (showOverlay.value = true)
