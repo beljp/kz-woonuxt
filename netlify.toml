@@ -1,6 +1,6 @@
 [build]
-  command = "npm run build"
-  functions = ".netlify/functions-internal" # Let op: zonder woonuxt_base/ vooraan!
+  command = "npm run build --prefix woonuxt_base"
+  functions = "woonuxt_base/.netlify/functions-internal"
 
 [[redirects]]
   from = "/api/*"
