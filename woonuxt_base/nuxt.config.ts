@@ -60,8 +60,8 @@ hooks: {
 
     // ✅ Bestaande routes
     addPage('product-page-pager', '/products/page/:pageNumber', 'products.vue');
-    addPage('product-category-page', '/product-category/:categorySlug', 'product-category/[slug].vue');
-    addPage('product-category-page-pager', '/product-category/:categorySlug/page/:pageNumber', 'product-category/[slug].vue');
+    addPage('product-category-page', '/c/:categorySlug', 'c/[slug].vue');
+    addPage('product-category-page-pager', '/c/:categorySlug/page/:pageNumber', 'c/[slug].vue');
     addPage('order-received', '/checkout/order-received/:orderId', 'order-summary.vue');
     addPage('order-summary', '/order-summary/:orderId', 'order-summary.vue');
   },
