@@ -104,7 +104,7 @@ const openCategories = ref(true)
           <div v-show="openCategories">
             <div v-if="parentCategory" class="mb-3 mt-2">
               <NuxtLink
-                :to="`/product-category/${parentCategory.slug}`"
+                :to="`/c/${parentCategory.slug}`"
                 class="text-sm text-gray-500 hover:text-primary transition"
               >
                 ← Terug naar {{ parentCategory.name }}
@@ -114,7 +114,7 @@ const openCategories = ref(true)
             <ul class="space-y-1">
               <li v-for="sibling in siblings" :key="sibling.id">
                 <NuxtLink
-                  :to="`/product-category/${sibling.slug}`"
+                  :to="`/c/${sibling.slug}`"
                   class="block font-medium text-gray-700 hover:text-primary transition"
                   :class="{ 'font-semibold text-primary underline': sibling.slug === currentSlug }"
                 >
@@ -127,7 +127,7 @@ const openCategories = ref(true)
                 >
                   <li v-for="sub in subCategories" :key="sub.id">
                     <NuxtLink
-                      :to="`/product-category/${sub.slug}`"
+                      :to="`/c/${sub.slug}`"
                       class="block text-gray-700 hover:text-primary transition"
                       :class="{ 'underline text-primary font-medium': sub.slug === currentSlug }"
                     >
