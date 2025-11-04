@@ -3,7 +3,7 @@ import { ProductsOrderByEnum } from '#woo';
 const { siteName, description, shortDescription, siteImage } = useAppConfig();
  
 // Homepagina categorie selectie
-const includeIds = [34, 35, 36, 37, 38] // <-- jouw gewenste volgorde (WordPress databaseId’s)
+const includeIds = [163, 164, 165, 166, 167] // <-- jouw gewenste volgorde (WordPress databaseId’s)
 
 // Haal alleen deze categorieën op
 const { data, error } = await useAsyncGql('getProductCategories', { include: includeIds })
