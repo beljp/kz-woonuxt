@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build --prefix woonuxt_base"
+  command = "cd woonuxt_base && npm run build"
   functions = "woonuxt_base/.netlify/functions-internal"
 
 [[redirects]]
