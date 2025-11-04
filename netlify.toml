@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build --prefix woonuxt_base"
+  command = "npm run build -- --cwd woonuxt_base"
   publish = "woonuxt_base/.output/public"
   functions = "woonuxt_base/.netlify/functions-internal"
 
