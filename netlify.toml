@@ -1,8 +1,7 @@
 [build]
-  base = "woonuxt_base"
-  command = "npm run build"
-  publish = ".netlify/functions-internal"
-  functions = ".netlify/functions"
+  command = "npm run build --prefix woonuxt_base"
+  publish = "woonuxt_base/.output/public"
+  functions = "woonuxt_base/.netlify/functions-internal"
 
 [[redirects]]
   from = "/api/*"
