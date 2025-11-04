@@ -25,7 +25,7 @@ export type MenuItem = {
 }
 
 // include moet [ID] zijn → strings!
-const TOP_IDS = ['34', '35', '36', '37', '38'] as const
+const TOP_IDS = ['163', '164', '165', '166', '167'] as const
 
 export async function useCategoryMenu() {
   const { data } = await useAsyncGql<{ productCategories: { nodes: CategoryNode[] } }>({
