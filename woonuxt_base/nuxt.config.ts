@@ -8,7 +8,7 @@ const GQL_HOST = process.env.GQL_HOST || 'http://localhost:4000/graphql';
 const APP_HOST = process.env.APP_HOST || 'http://localhost:3000';
 
 export default defineNuxtConfig({
-
+ ssr: true, // <— belangrijk
   image: {
     provider: 'none',
     domains: ['wp.kledingzoeken.nl'], // ← vervang met je echte WordPress domein
@@ -73,6 +73,7 @@ hooks: {
     routeRules: {
       '/checkout/order-received/**': { prerender: false },
       '/order-summary/**': { prerender: false },
+      '/api/**': { prerender: false }, // <— voeg dit toe!
     },
   },
 
