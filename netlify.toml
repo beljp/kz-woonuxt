@@ -1,13 +1,9 @@
 [build]
-  base = ""                                  # build vanuit de root
-  command = "npm run build"                  # standaard build-script uit package.json
-  publish = "woonuxt_base/.output"    # waar je site wordt gepubliceerd
-  functions = "woonuxt_base/.netlify/functions-internal"  # waar serverless functions komen
+  command = "npm run build"
+  functions = "woonuxt_base/.netlify/functions-internal"
 
-[build.environment]
-  NITRO_PRESET = "netlify"                   # vertel Nitro dat we op Netlify draaien
-  NUXT_CWD = "woonuxt_base"                  # vertel Nuxt dat de app in woonuxt_base staat
-  REVALIDATE_SECRET = "kz_refresh_2025"      # (optioneel) voor je /api/revalidate endpoint
+# ✅ Public map niet instellen, Netlify detecteert SSR zelf
+# (dus géén "publish" regel hier!)
 
 [[redirects]]
   from = "/api/*"
