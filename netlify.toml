@@ -1,9 +1,7 @@
 [build]
   command = "npm run build"
+  publish = "woonuxt_base/.output/public"
   functions = "woonuxt_base/.netlify/functions-internal"
-
-# ✅ Public map niet instellen, Netlify detecteert SSR zelf
-# (dus géén "publish" regel hier!)
 
 [[redirects]]
   from = "/api/*"
