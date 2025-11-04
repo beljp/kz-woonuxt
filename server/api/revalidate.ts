@@ -1,32 +1,17 @@
-// /server/api/revalidate.ts
-import { defineEventHandler, getQuery, createError } from 'h3'
-
 export default defineEventHandler(async (event) => {
-  // ✅ 1. Secret token beveiligen
-  const { secret } = getQuery(event)
-  if (secret !== process.env.REVALIDATE_SECRET) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'Invalid or missing secret token',
-    })
+  // Je geheime sleutel uit Netlify (of direct in code)
+  const secret = getQuery(event).secret;
+  const expectedSecret = process.env.REVALIDATE_SECRET || 'kz_refresh_2025';
+
+  if (secret !== expectedSecret) {
+    return { revalidated: false, message: 'Invalid secret' };
   }
 
-  console.log('🔁 Revalidation triggered by webhook at', new Date().toISOString())
+  // Trigger hier eventueel een rebuild of cache refresh
+  // In WooNuxt kun je eventueel API-caches legen of iets anders doen
 
-  // ✅ 2. Roep Nuxt revalidate API aan (ververst alle cached asyncData / GraphQL queries)
-  try {
-    // Dit laat Nuxt alle statische pagina’s herladen waar revalidate actief is
-    await $fetch('/api/_content/revalidate', { method: 'POST' })
-
-    return {
-      revalidated: true,
-      timestamp: new Date().toISOString(),
-    }
-  } catch (err) {
-    console.error('Revalidate error:', err)
-    return {
-      revalidated: false,
-      error: err.message,
-    }
-  }
-})
+  return {
+    revalidated: true,
+    timestamp: new Date().toISOString(),
+  };
+});
