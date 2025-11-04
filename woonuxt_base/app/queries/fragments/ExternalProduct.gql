@@ -14,12 +14,18 @@ query getProduct($slug: ID!) {
     description
     rawDescription: description(format: RAW)
     shortDescription
+
+    # 🔹 Product details & taxonomieën
     ...ProductWithAttributes
     ...ProductCategories
     ...Terms
+
+    # 🔹 Product types (Simple, Variable, External)
     ...SimpleProduct
     ...VariableProduct
     ...ExternalProduct
+
+    # 🔹 Gerelateerde producten
     related(first: 5) {
       nodes {
         ...SimpleProduct
@@ -27,6 +33,8 @@ query getProduct($slug: ID!) {
         ...ExternalProduct
       }
     }
+
+    # 🔹 Reviews
     reviews {
       averageRating
       edges {
@@ -39,6 +47,7 @@ query getProduct($slug: ID!) {
   }
 }
 
+# ✅ Product attributen (kleur, maat, etc.)
 fragment ProductWithAttributes on ProductWithAttributes {
   attributes {
     nodes {
@@ -62,6 +71,30 @@ fragment ProductAttribute on ProductAttribute {
         taxonomyName
         databaseId
       }
+    }
+  }
+}
+
+# ✅ Nieuw / uitgebreid ExternalProduct fragment
+fragment ExternalProduct on ExternalProduct {
+  id
+  databaseId
+  name
+  slug
+  type
+  sku
+  price
+  regularPrice
+  salePrice
+  onSale            # 🟢 toegevoegd: zorgt dat sale-filter ook werkt voor External producten
+  externalUrl
+  image {
+    id
+    sourceUrl
+    altText
+    mediaDetails {
+      width
+      height
     }
   }
 }
