@@ -1,7 +1,7 @@
 [build]
   base = ""                                  # build vanuit de root
   command = "npm run build"                  # standaard build-script uit package.json
-  publish = "woonuxt_base/.output/public"    # waar je site wordt gepubliceerd
+  publish = "woonuxt_base/.output"    # waar je site wordt gepubliceerd
   functions = "woonuxt_base/.netlify/functions-internal"  # waar serverless functions komen
 
 [build.environment]
