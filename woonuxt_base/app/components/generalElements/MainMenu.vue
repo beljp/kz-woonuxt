@@ -7,12 +7,9 @@ const { topMenu } = await useCategoryMenu()
 
 const showOverlay = ref(false)
 
-const buildCategoryLink = (slug: string) => `/c/${slug}/`
-
 const onEnter = () => (showOverlay.value = true)
 const onLeave = () => (showOverlay.value = false)
 const closeMenu = () => (showOverlay.value = false)
-
 </script>
 
 <template>
@@ -33,9 +30,9 @@ const closeMenu = () => (showOverlay.value = false)
         :key="item.id"
         class="relative group/menu"
       >
-        <!-- top-level -->
+        <!-- top-level categorie -->
         <NuxtLink
-          :to="buildCategoryLink(item.label.toLowerCase())"
+          :to="item.uri"
           class="font-semibold text-gray-900 hover:text-primary tracking-wide transition-colors hover:underline underline-offset-4"
           @click="closeMenu"
         >
@@ -44,6 +41,7 @@ const closeMenu = () => (showOverlay.value = false)
 
         <!-- dropdown -->
         <div
+          v-if="item.columns && item.columns.length"
           class="absolute left-0 top-full translate-y-3 bg-white border border-gray-100 shadow-2xl rounded-3xl opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-200 ease-out z-50"
         >
           <div class="grid grid-cols-3 gap-10 min-w-[800px] bg-gray-50 rounded-2xl p-6 shadow-inner">
@@ -54,7 +52,7 @@ const closeMenu = () => (showOverlay.value = false)
             >
               <!-- kolomtitel -->
               <NuxtLink
-                :to="buildCategoryLink(column.title.toLowerCase().replaceAll(' ', '-'))"
+                :to="column.uri"
                 class="block font-semibold text-gray-900 hover:text-primary mb-2 transition-colors"
                 @click="closeMenu"
               >
@@ -64,10 +62,10 @@ const closeMenu = () => (showOverlay.value = false)
               <ul class="space-y-1">
                 <li
                   v-for="link in column.items"
-                  :key="link.uri"
+                  :key="link.id"
                 >
                   <NuxtLink
-                    :to="buildCategoryLink(link.label.toLowerCase().replaceAll(' ', '-'))"
+                    :to="link.uri"
                     class="block text-sm text-gray-600 hover:text-primary transition-colors"
                     @click="closeMenu"
                   >
@@ -109,7 +107,6 @@ const closeMenu = () => (showOverlay.value = false)
         v-if="showOverlay"
         class="absolute inset-x-0 top-full bottom-0 z-40"
       >
-        <!-- Gebruik hier jouw bestaande overlay (zoals cart-overlay) -->
         <div class="w-full h-full overlay"></div>
       </div>
     </transition>
