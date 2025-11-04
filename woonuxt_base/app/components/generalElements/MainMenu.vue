@@ -7,7 +7,7 @@ const { topMenu } = await useCategoryMenu()
 
 const showOverlay = ref(false)
 
-const buildCategoryLink = (slug: string) => `/product-category/${slug}/`
+const buildCategoryLink = (slug: string) => `/c/${slug}/`
 
 const onEnter = () => (showOverlay.value = true)
 const onLeave = () => (showOverlay.value = false)
