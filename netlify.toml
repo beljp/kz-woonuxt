@@ -1,5 +1,6 @@
 [build]
-  command = "cd woonuxt_base && npm run build"
+  # Gebruik npm uit de root, maar wijs de woonuxt_base-map aan als werkdirectory
+  command = "npm run build -- --cwd woonuxt_base"
   functions = "woonuxt_base/.netlify/functions-internal"
 
 [[redirects]]
