@@ -1,8 +1,6 @@
 {
-  "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "types": ["@types/node"]
+    "skipLibCheck": true
   },
-  "include": ["app", "modules", "server"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "**/.nuxt", "woonuxt_base/.nuxt"]
 }
