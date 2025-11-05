@@ -53,17 +53,27 @@ useHead({
     <!-- 🛒 Main content -->
     <div class="flex-1 w-full">
       <!-- Breadcrumb -->
-      <nav class="text-sm text-gray-500 mb-2">
+      <!-- 📍 Dynamische breadcrumb -->
+      <nav class="text-sm text-gray-500 mb-3 flex flex-wrap items-center">
         <NuxtLink to="/" class="hover:underline">Home</NuxtLink>
-        <span class="mx-2">/</span>
-        <NuxtLink
-          v-if="category?.parent?.node?.slug"
-          :to="`/c/${category.parent.node.slug}`"
-          class="hover:underline"
-        >
-          {{ category.parent.node.name }}
-        </NuxtLink>
-        <span class="mx-2" v-if="category?.parent?.node?.slug">/</span>
+        <span class="mx-2 text-gray-400">/</span>
+      
+        <template v-if="category?.ancestors?.nodes?.length">
+          <template
+            v-for="(ancestor, i) in [...category.ancestors.nodes].reverse()"
+            :key="ancestor.id"
+          >
+            <NuxtLink
+              :to="`/c/${ancestor.slug}`"
+              class="hover:underline"
+            >
+              {{ ancestor.name }}
+            </NuxtLink>
+            <span v-if="i < category.ancestors.nodes.length - 1" class="mx-2 text-gray-400">/</span>
+          </template>
+          <span class="mx-2 text-gray-400">/</span>
+        </template>
+      
         <span class="text-gray-700 font-medium">{{ category?.name }}</span>
       </nav>
 
