@@ -84,19 +84,17 @@ const imagetoDisplay = computed<string>(() => {
     >
       <SaleBadge :node class="absolute top-2 right-2" />
 
-      <NuxtImg
-        v-if="imagetoDisplay"
-        :width="imgWidth"
-        :height="imgHeight"
-        :src="imagetoDisplay"
-        :alt="node.image?.altText || node.name || 'Product image'"
-        :title="node.image?.title || node.name"
-        :loading="index <= 3 ? 'eager' : 'lazy'"
-        :sizes="`sm:${imgWidth / 2}px md:${imgWidth}px`"
-        class="rounded-lg object-top object-cover w-full aspect-9/8 transition-transform duration-200 group-hover:scale-[1.03]"
-        placeholder
-        placeholder-class="blur-xl"
-      />
+      <div class="w-full aspect-square bg-white rounded-lg flex items-center justify-center overflow-hidden">
+        <NuxtImg
+          :src="imagetoDisplay"
+          :alt="node.image?.altText || node.name || 'Product image'"
+          :width="imgWidth"
+          :height="imgHeight"
+          class="max-h-full max-w-full object-contain transition-transform duration-200 group-hover:scale-[1.03]"
+          placeholder
+          placeholder-class="blur-xl"
+        />
+      </div>
     </a>
 
     <div class="p-2">
