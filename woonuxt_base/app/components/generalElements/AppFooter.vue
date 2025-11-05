@@ -48,7 +48,7 @@ const { wishlistLink } = useAuth()
     <!-- Onderste gedeelte -->
     <div class="container border-t pt-4 pb-6 flex flex-col items-center justify-center text-sm text-gray-500">
       <p class="mb-2">
-        &copy; {{ new Date().getFullYear() }} Kledingzoeken.nl - <NuxtLink to="/partner-disclosure/" class="py-1.5 block hover:underline">Partner disclosure/NuxtLink>  - <NuxtLink to="/privacy-policy/" class="py-1.5 block hover:underline">Privacy Policy/NuxtLink>
+        &copy; {{ new Date().getFullYear() }} Kledingzoeken.nl - <NuxtLink to="/partner-disclosure/" class="py-1.5 block hover:underline">Partner disclosure/NuxtLink>  - <NuxtLink to="/privacy-verklaring/" class="py-1.5 block hover:underline">Privacy verklaring/NuxtLink>
       </p>
       <SocialIcons />
     </div>
