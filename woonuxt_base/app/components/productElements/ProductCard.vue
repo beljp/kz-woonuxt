@@ -65,13 +65,13 @@ const imagetoDisplay = computed<string>(() => {
 
 <template>
   <div
-    class="group relative rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+    class="group relative flex flex-col justify-between rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden min-h-[380px]"
   >
     <a
       href="#"
       @click.prevent="openProduct(node.databaseId, node.slug)"
       :title="node.name"
-      class="block"
+      class="block flex-1"
     >
       <SaleBadge
         v-if="node.onSale"
@@ -80,7 +80,9 @@ const imagetoDisplay = computed<string>(() => {
       />
 
       <!-- Afbeelding-wrapper -->
-      <div class="flex items-center justify-center aspect-square bg-gray-50 overflow-hidden">
+      <div
+        class="flex items-center justify-center h-[250px] bg-gray-50 overflow-hidden"
+      >
         <NuxtImg
           v-if="imagetoDisplay"
           :src="imagetoDisplay"
@@ -98,14 +100,14 @@ const imagetoDisplay = computed<string>(() => {
     </a>
 
     <!-- Product-info -->
-    <div class="p-3 text-center">
+    <div class="flex flex-col justify-between flex-none p-3 text-center h-[120px]">
       <NuxtLink
         v-if="node.slug"
         :to="`/product/${decodeURIComponent(node.slug)}`"
         :title="node.name"
       >
         <h2
-          class="mb-2 text-sm font-medium leading-tight text-gray-800 group-hover:text-primary transition-colors line-clamp-2"
+          class="mb-2 text-sm font-medium leading-tight text-gray-800 group-hover:text-primary transition-colors line-clamp-2 min-h-[40px]"
         >
           {{ node.name }}
         </h2>
@@ -121,3 +123,4 @@ const imagetoDisplay = computed<string>(() => {
     </div>
   </div>
 </template>
+
