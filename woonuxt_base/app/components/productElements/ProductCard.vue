@@ -14,7 +14,6 @@ const imgWidth = 280
 const imgHeight = Math.round(imgWidth * 1.125)
 
 const productSlideOver = inject('productSlideOver') as Ref<any>
-const router = useRouter()
 function openProduct(id: number, slug: string) {
   productSlideOver?.value?.open(id, slug)
 }
@@ -117,6 +116,7 @@ const imagetoDisplay = computed<string>(() => {
         :regular-price="node.regularPrice"
         :sale-price="node.salePrice"
         :on-sale="node.onSale"
+        :price="node.price"
       />
     </div>
   </div>
