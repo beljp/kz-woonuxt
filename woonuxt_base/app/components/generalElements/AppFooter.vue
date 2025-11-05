@@ -16,11 +16,11 @@ const { wishlistLink } = useAuth()
       <div class="w-3/7 lg:w-auto">
         <div class="mb-1 font-semibold">Categorieën</div>
         <div class="text-sm">
-          <NuxtLink to="/dames" class="py-1.5 block hover:underline">Dames</NuxtLink>
-          <NuxtLink to="/heren" class="py-1.5 block hover:underline">Heren</NuxtLink>
-          <NuxtLink to="/jongens" class="py-1.5 block hover:underline">Jongens</NuxtLink>
-          <NuxtLink to="/meisjes" class="py-1.5 block hover:underline">Meisjes</NuxtLink>
-          <NuxtLink to="/babys" class="py-1.5 block hover:underline">Baby’s</NuxtLink>
+          <NuxtLink to="c/dames/" class="py-1.5 block hover:underline">Dames</NuxtLink>
+          <NuxtLink to="c/heren/" class="py-1.5 block hover:underline">Heren</NuxtLink>
+          <NuxtLink to="c/jongens/" class="py-1.5 block hover:underline">Jongens</NuxtLink>
+          <NuxtLink to="c/meisjes/" class="py-1.5 block hover:underline">Meisjes</NuxtLink>
+          <NuxtLink to="c/babys/" class="py-1.5 block hover:underline">Baby’s</NuxtLink>
         </div>
       </div>
 
@@ -28,9 +28,9 @@ const { wishlistLink } = useAuth()
       <div class="w-3/7 lg:w-auto">
         <div class="mb-1 font-semibold">Informatie</div>
         <div class="text-sm">
-          <NuxtLink to="/veel-gestelde-vragen" class="py-1.5 block hover:underline">Veelgestelde vragen</NuxtLink>
-          <NuxtLink to="/merken" class="py-1.5 block hover:underline">Merken</NuxtLink>
-          <NuxtLink to="/sample-page" class="py-1.5 block hover:underline">Sample Page</NuxtLink>
+          <NuxtLink to="/veel-gestelde-vragen/" class="py-1.5 block hover:underline">Veelgestelde vragen</NuxtLink>
+          <NuxtLink to="/merken/" class="py-1.5 block hover:underline">Merken</NuxtLink>
+          <NuxtLink to="/over-kledingzoeken/" class="py-1.5 block hover:underline">Over ons</NuxtLink>
         </div>
       </div>
 
@@ -38,9 +38,9 @@ const { wishlistLink } = useAuth()
       <div class="w-3/7 lg:w-auto">
         <div class="mb-1 font-semibold">Klantenservice</div>
         <div class="text-sm">
-          <NuxtLink to="/mijn-account" class="py-1.5 block hover:underline">Mijn account</NuxtLink>
+          <NuxtLink to="/mijn-account/" class="py-1.5 block hover:underline">Mijn account</NuxtLink>
           <NuxtLink :to="wishlistLink" class="py-1.5 block hover:underline">Wishlist</NuxtLink>
-          <NuxtLink to="/contact" class="py-1.5 block hover:underline">Contact</NuxtLink>
+          <NuxtLink to="/contact/" class="py-1.5 block hover:underline">Contact</NuxtLink>
         </div>
       </div>
     </div>
