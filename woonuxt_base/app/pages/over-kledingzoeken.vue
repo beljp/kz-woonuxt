@@ -70,4 +70,15 @@
     <section class="text-center bg-gray-50 p-10 rounded-2xl shadow-inner">
       <h2 class="text-2xl font-semibold mb-4">Word partner</h2>
       <p class="mb-6">
-        Ben je een merk of webshop en wil je jouw collecti
+        Ben je een merk of webshop en wil je jouw collectie tonen op Kledingzoeken.nl? 
+        Neem contact met ons op en ontdek hoe eenvoudig het is om aan te sluiten.
+      </p>
+      <NuxtLink
+        to="/contact"
+        class="inline-block bg-primary text-white font-medium py-3 px-6 rounded-full hover:bg-primary/90 transition"
+      >
+        Neem contact op
+      </NuxtLink>
+    </section>
+  </main>
+</template>
