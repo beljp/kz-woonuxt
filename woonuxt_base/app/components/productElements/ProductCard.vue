@@ -5,30 +5,26 @@ import type { Product } from '~/types/product'
 const route = useRoute()
 const { storeSettings } = useAppConfig()
 
-// 🧩 Props
 const props = defineProps({
   node: { type: Object as PropType<Product>, required: true },
   index: { type: Number, default: 1 },
 })
 
-// 📐 Afbeeldingsmaten
 const imgWidth = 280
 const imgHeight = Math.round(imgWidth * 1.125)
 
-// 🪟 Overlay (Woonuxt provide/inject)
 const productSlideOver = inject('productSlideOver') as Ref<any>
 const router = useRouter()
 function openProduct(id: number, slug: string) {
   productSlideOver?.value?.open(id, slug)
 }
 
-// 🎨 Filters (kleurvariaties)
+// Filters (kleurvariaties)
 const filterQuery = ref(route.query?.filter as string)
 const paColor = ref(
   filterQuery.value?.split('pa_color[')[1]?.split(']')[0]?.split(',') || []
 )
 
-// 🔁 Reageer op query-veranderingen
 watch(
   () => route.query,
   () => {
@@ -38,7 +34,7 @@ watch(
   }
 )
 
-// 🖼️ Afbeelding bepalen
+// Afbeelding bepalen
 const mainImage = computed<string>(
   () =>
     props.node?.image?.producCardSourceUrl ||
@@ -66,53 +62,61 @@ const imagetoDisplay = computed<string>(() => {
   }
   return mainImage.value
 })
-
-// onMounted(() => {
-//   if (props.node?.__typename === 'ExternalProduct') {
-//     console.log('External product:', props.node)
-//   }
-// })
 </script>
 
 <template>
-  <div class="relative group">
-    <!-- Altijd slide-over openen (ook bij ExternalProduct) -->
+  <div
+    class="group relative rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+  >
     <a
       href="#"
       @click.prevent="openProduct(node.databaseId, node.slug)"
       :title="node.name"
+      class="block"
     >
-      <SaleBadge :node class="absolute top-2 right-2" />
+      <SaleBadge
+        v-if="node.onSale"
+        :node="node"
+        class="absolute top-2 right-2 z-10"
+      />
 
-      <div class="w-full aspect-square bg-white rounded-lg flex items-center justify-center overflow-hidden">
+      <!-- Afbeelding-wrapper -->
+      <div class="flex items-center justify-center aspect-square bg-gray-50 overflow-hidden">
         <NuxtImg
+          v-if="imagetoDisplay"
           :src="imagetoDisplay"
-          :alt="node.image?.altText || node.name || 'Product image'"
           :width="imgWidth"
           :height="imgHeight"
-          class="max-h-full max-w-full object-contain transition-transform duration-200 group-hover:scale-[1.03]"
+          :alt="node.image?.altText || node.name || 'Product image'"
+          :title="node.image?.title || node.name"
+          :loading="index <= 3 ? 'eager' : 'lazy'"
+          :sizes="`sm:${imgWidth / 2}px md:${imgWidth}px`"
+          class="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
           placeholder
           placeholder-class="blur-xl"
         />
       </div>
     </a>
 
-    <div class="p-2">
+    <!-- Product-info -->
+    <div class="p-3 text-center">
       <NuxtLink
         v-if="node.slug"
         :to="`/product/${decodeURIComponent(node.slug)}`"
         :title="node.name"
       >
-        <h2 class="mb-2 font-light leading-tight group-hover:text-primary">
+        <h2
+          class="mb-2 text-sm font-medium leading-tight text-gray-800 group-hover:text-primary transition-colors line-clamp-2"
+        >
           {{ node.name }}
         </h2>
       </NuxtLink>
 
-      <!-- Prijs met fallback voor ExternalProduct -->
+      <!-- Prijs -->
       <ProductPrice
-        class="text-sm"
-        :sale-price="node.salePrice || node.price"
-        :regular-price="node.regularPrice || node.price"
+        :regular-price="node.regularPrice"
+        :sale-price="node.salePrice"
+        :on-sale="node.onSale"
       />
     </div>
   </div>
