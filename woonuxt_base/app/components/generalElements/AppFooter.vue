@@ -16,11 +16,11 @@ const { wishlistLink } = useAuth()
       <div class="w-3/7 lg:w-auto">
         <div class="mb-1 font-semibold">Categorieën</div>
         <div class="text-sm">
-          <NuxtLink to="c/dames/" class="py-1.5 block hover:underline">Dames</NuxtLink>
-          <NuxtLink to="c/heren/" class="py-1.5 block hover:underline">Heren</NuxtLink>
-          <NuxtLink to="c/jongens/" class="py-1.5 block hover:underline">Jongens</NuxtLink>
-          <NuxtLink to="c/meisjes/" class="py-1.5 block hover:underline">Meisjes</NuxtLink>
-          <NuxtLink to="c/babys/" class="py-1.5 block hover:underline">Baby’s</NuxtLink>
+          <NuxtLink to="/c/dames/" class="py-1.5 block hover:underline">Dames</NuxtLink>
+          <NuxtLink to="/c/heren/" class="py-1.5 block hover:underline">Heren</NuxtLink>
+          <NuxtLink to="/c/jongens/" class="py-1.5 block hover:underline">Jongens</NuxtLink>
+          <NuxtLink to="/c/meisjes/" class="py-1.5 block hover:underline">Meisjes</NuxtLink>
+          <NuxtLink to="/c/babys/" class="py-1.5 block hover:underline">Baby’s</NuxtLink>
         </div>
       </div>
 
