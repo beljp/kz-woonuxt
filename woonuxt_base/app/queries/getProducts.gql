@@ -1,7 +1,7 @@
 query getProducts(
   $after: String
   $slug: [String]
-  $first: Int = 9999
+  $first: Int = 20
   $orderby: ProductsOrderByEnum = DATE
   $onSale: Boolean
 ) {
