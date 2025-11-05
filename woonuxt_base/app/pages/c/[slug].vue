@@ -1,40 +1,75 @@
 <script setup lang="ts">
 import type { Product } from '~/types/product'
 
-const { setProducts, updateProductList } = useProducts()
+const { setProducts } = useProducts()
 const { isQueryEmpty } = useHelpers()
 const { storeSettings } = useAppConfig()
 const route = useRoute()
 const slug = route.params.slug
 
-// 🧩 Producten & categorie ophalen
-const { data } = await useAsyncGql('getProducts', { slug })
-const productsInCategory = (data.value?.products?.nodes || []) as Product[]
-const category = data.value?.productCategories?.nodes?.[0]
-setProducts(productsInCategory)
+const products = ref<Product[]>([])
+const pageInfo = ref<{ endCursor: string; hasNextPage: boolean } | null>(null)
+const isLoading = ref(false)
+
+// 🚀 Ophalen van producten met cursor-paginatie
+const fetchProducts = async (after?: string) => {
+  isLoading.value = true
+  const { data } = await useAsyncGql('getProducts', {
+    slug,
+    first: 20,
+    after,
+  })
+
+  const newProducts = (data.value?.products?.nodes || []) as Product[]
+  const info = data.value?.products?.pageInfo
+
+  if (after) {
+    products.value.push(...newProducts)
+  } else {
+    products.value = newProducts
+  }
+
+  pageInfo.value = info
+  setProducts(products.value)
+  isLoading.value = false
+}
+
+// 🧩 Initieel laden
+await fetchProducts()
+
+// 🧠 Categorie data
+const category = useAsyncData(() => {
+  return products.value.length ? data.value?.productCategories?.nodes?.[0] : null
+})
 
 // 🔁 Filters opnieuw laden bij query-wijziging
 onMounted(() => {
-  if (!isQueryEmpty.value) updateProductList()
+  if (!isQueryEmpty.value) fetchProducts()
 })
 
-watch(
-  () => route.query,
-  () => {
-    if (route.name !== 'product-category-slug') return
-    updateProductList()
-  },
-)
+// 🔍 Infinite scroll observer
+const loadMoreRef = ref<HTMLElement | null>(null)
+
+onMounted(() => {
+  if (!loadMoreRef.value) return
+  const observer = new IntersectionObserver(async (entries) => {
+    if (entries[0].isIntersecting && pageInfo.value?.hasNextPage) {
+      await fetchProducts(pageInfo.value.endCursor)
+    }
+  }, { threshold: 0.5 })
+
+  observer.observe(loadMoreRef.value)
+})
 
 // 🧠 SEO
 useHead({
-  title: category?.name || 'Categorie',
+  title: category.value?.name || 'Categorie',
   meta: [
     {
       hid: 'description',
       name: 'description',
       content:
-        category?.description?.replace(/<[^>]+>/g, '').substring(0, 155) || '',
+        category.value?.description?.replace(/<[^>]+>/g, '').substring(0, 155) || '',
     },
   ],
 })
@@ -43,7 +78,6 @@ useHead({
 <template>
   <div class="container flex flex-col md:flex-row gap-16 mt-8">
     <!-- 🧭 Filters -->
-    <!-- ✅ Sidebar (desktop) + modal (mobiel) automatisch via Woonuxt -->
     <Filters
       v-if="storeSettings.showFilters"
       :hide-categories="false"
@@ -53,27 +87,26 @@ useHead({
     <!-- 🛒 Main content -->
     <div class="flex-1 w-full">
       <!-- Breadcrumb -->
-      <!-- 📍 Dynamische breadcrumb -->
       <nav class="text-sm text-gray-500 mb-3 flex flex-wrap items-center">
         <NuxtLink to="/" class="hover:underline">Home</NuxtLink>
         <span class="mx-2 text-gray-400">/</span>
-      
+
         <template v-if="category?.ancestors?.nodes?.length">
           <template
             v-for="(ancestor, i) in [...category.ancestors.nodes].reverse()"
             :key="ancestor.id"
           >
-            <NuxtLink
-              :to="`/c/${ancestor.slug}`"
-              class="hover:underline"
-            >
+            <NuxtLink :to="`/c/${ancestor.slug}`" class="hover:underline">
               {{ ancestor.name }}
             </NuxtLink>
-            <span v-if="i < category.ancestors.nodes.length - 1" class="mx-2 text-gray-400">/</span>
+            <span
+              v-if="i < category.ancestors.nodes.length - 1"
+              class="mx-2 text-gray-400"
+            >/</span>
           </template>
           <span class="mx-2 text-gray-400">/</span>
         </template>
-      
+
         <span class="text-gray-700 font-medium">{{ category?.name }}</span>
       </nav>
 
@@ -92,13 +125,11 @@ useHead({
       <div class="flex items-center justify-between w-full gap-4 mb-6 md:gap-8">
         <ProductResultCount />
 
-        <!-- Sorteeropties -->
         <OrderByDropdown
           v-if="storeSettings.showOrderByDropdown"
           class="hidden md:inline-flex"
         />
 
-        <!-- 📱 Mobiele filter trigger -->
         <ShowFilterTrigger
           v-if="storeSettings.showFilters"
           class="md:hidden"
@@ -106,7 +137,20 @@ useHead({
       </div>
 
       <!-- Productgrid -->
-      <ProductGrid />
+      <ProductGrid :products="products" />
+
+      <!-- Loading / Infinite scroll -->
+      <div v-if="isLoading" class="text-center text-gray-400 py-6">
+        Even geduld...
+      </div>
+
+      <div
+        ref="loadMoreRef"
+        v-if="pageInfo?.hasNextPage && !isLoading"
+        class="py-8 text-center text-gray-500"
+      >
+        Meer laden...
+      </div>
     </div>
   </div>
 </template>
