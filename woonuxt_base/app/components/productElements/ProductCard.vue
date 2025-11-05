@@ -18,7 +18,7 @@ function openProduct(id: number, slug: string) {
   productSlideOver?.value?.open(id, slug)
 }
 
-// Filters (kleurvariaties)
+// ✅ Kleurfilter uit URL
 const filterQuery = ref(route.query?.filter as string)
 const paColor = ref(
   filterQuery.value?.split('pa_color[')[1]?.split(']')[0]?.split(',') || []
@@ -33,7 +33,7 @@ watch(
   }
 )
 
-// Afbeelding bepalen
+// ✅ Afbeelding bepalen
 const mainImage = computed<string>(
   () =>
     props.node?.image?.producCardSourceUrl ||
@@ -61,17 +61,23 @@ const imagetoDisplay = computed<string>(() => {
   }
   return mainImage.value
 })
+
+// ✅ Zorg dat prijs numeriek blijft voor OrderByDropdown
+const normalizedPrice = computed(() => {
+  const p = props.node?.price || props.node?.salePrice || props.node?.regularPrice
+  return parseFloat(String(p).replace(/[^\d.,-]/g, '').replace(',', '.')) || 0
+})
 </script>
 
 <template>
   <div
-    class="group relative flex flex-col justify-between rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden min-h-[380px]"
+    class="group flex flex-col justify-between rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden min-h-[400px]"
   >
     <a
       href="#"
       @click.prevent="openProduct(node.databaseId, node.slug)"
       :title="node.name"
-      class="block flex-1"
+      class="block"
     >
       <SaleBadge
         v-if="node.onSale"
@@ -79,10 +85,8 @@ const imagetoDisplay = computed<string>(() => {
         class="absolute top-2 right-2 z-10"
       />
 
-      <!-- Afbeelding-wrapper -->
-      <div
-        class="flex items-center justify-center h-[250px] bg-gray-50 overflow-hidden"
-      >
+      <!-- 📸 Afbeelding -->
+      <div class="flex items-center justify-center h-[250px] bg-gray-50 overflow-hidden">
         <NuxtImg
           v-if="imagetoDisplay"
           :src="imagetoDisplay"
@@ -99,28 +103,29 @@ const imagetoDisplay = computed<string>(() => {
       </div>
     </a>
 
-    <!-- Product-info -->
-    <div class="flex flex-col justify-between flex-none p-3 text-center h-[120px]">
+    <!-- 🏷️ Info -->
+    <div class="flex flex-col justify-between flex-1 p-3 text-center">
       <NuxtLink
         v-if="node.slug"
         :to="`/product/${decodeURIComponent(node.slug)}`"
         :title="node.name"
       >
         <h2
-          class="mb-2 text-sm font-medium leading-tight text-gray-800 group-hover:text-primary transition-colors line-clamp-2 min-h-[40px]"
+          class="mb-3 text-sm font-medium leading-tight text-gray-800 group-hover:text-primary transition-colors line-clamp-2 min-h-[40px]"
         >
           {{ node.name }}
         </h2>
       </NuxtLink>
 
-      <!-- Prijs -->
-      <ProductPrice
-        :regular-price="node.regularPrice"
-        :sale-price="node.salePrice"
-        :on-sale="node.onSale"
-        :price="node.price"
-      />
+      <!-- 💰 Prijs -->
+      <div class="mt-auto">
+        <ProductPrice
+          :regular-price="node.regularPrice"
+          :sale-price="node.salePrice"
+          :on-sale="node.onSale"
+          :price="normalizedPrice"
+        />
+      </div>
     </div>
   </div>
 </template>
-
