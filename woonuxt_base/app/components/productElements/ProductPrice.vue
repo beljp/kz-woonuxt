@@ -2,14 +2,23 @@
 interface ProductPriceProps {
   regularPrice?: string | null;
   salePrice?: string | null;
+  onSale?: boolean;
 }
 
-const { regularPrice, salePrice } = defineProps<ProductPriceProps>();
+const { regularPrice, salePrice, onSale } = defineProps<ProductPriceProps>();
 </script>
 
 <template>
-  <div v-if="regularPrice" class="flex font-semibold">
-    <span :class="{ 'text-gray-400 line-through font-normal': salePrice }" v-html="regularPrice" />
-    <span v-if="salePrice" class="ml-2" v-html="salePrice" />
+  <div v-if="regularPrice || salePrice" class="flex items-center justify-center gap-1 text-sm font-semibold">
+    <!-- Alleen doorhalen als er echt een sale is -->
+    <template v-if="onSale && salePrice">
+      <span class="text-gray-400 line-through font-normal" v-html="regularPrice" />
+      <span class="text-gray-900" v-html="salePrice" />
+    </template>
+
+    <!-- Normale prijs -->
+    <template v-else>
+      <span class="text-gray-900" v-html="regularPrice || salePrice" />
+    </template>
   </div>
 </template>
