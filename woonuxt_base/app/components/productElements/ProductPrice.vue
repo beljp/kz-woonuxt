@@ -10,16 +10,19 @@ const { regularPrice, salePrice, onSale, price } = defineProps<ProductPriceProps
 </script>
 
 <template>
-  <div v-if="regularPrice || salePrice || price" class="flex flex-col items-center justify-center text-sm font-semibold">
-    <!-- Alleen doorgestreept bij sale -->
+  <div
+    v-if="regularPrice || salePrice || price"
+    class="flex flex-col items-center justify-center text-base font-semibold"
+  >
+    <!-- 🔻 Sale -->
     <template v-if="onSale && salePrice">
-      <div class="flex items-center gap-1">
+      <div class="flex items-center gap-2">
         <span class="text-gray-400 line-through font-normal" v-html="regularPrice" />
         <span class="text-gray-900" v-html="salePrice" />
       </div>
     </template>
 
-    <!-- Normale prijs -->
+    <!-- 💰 Normale prijs -->
     <template v-else>
       <span class="text-gray-900" v-html="regularPrice || salePrice || price" />
     </template>
